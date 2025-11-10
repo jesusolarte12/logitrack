@@ -1,11 +1,11 @@
-use LogiTrack;
+USE LogiTrack;
 
 -- =================== USUARIOS ===================
 INSERT INTO usuario (username, password, nombre, email, rol) VALUES
 ('admin',    'admin_hash',     'Administrador General',     'admin@empresa.com',    'ADMIN'),
 ('bodega1',  'bodega1_hash',   'Ana Torres',                'ana@empresa.com',      'EMPLEADO'),
-('bodega2',  'bodega2_hash',   'Luis Martínez',             'luis@empresa.com',     'EMPLEADO'),
-('invitado', 'invitado_hash',  'Invitado de Auditoría',     'audit@empresa.com',    'EMPLEADO');
+('bodega2',  'bodega2_hash',   'Luis Martinez',             'luis@empresa.com',     'EMPLEADO'),
+('invitado', 'invitado_hash',  'Invitado de Auditoria',     'audit@empresa.com',    'EMPLEADO');
 
 -- =================== BODEGAS ===================
 INSERT INTO bodega (nombre, ubicacion, capacidad, encargado_id) VALUES
@@ -14,13 +14,13 @@ INSERT INTO bodega (nombre, ubicacion, capacidad, encargado_id) VALUES
 
 -- =================== PRODUCTOS ===================
 INSERT INTO producto (nombre, categoria, stock, precio) VALUES
-('Tornillos 5mm',     'Ferretería',     2000,    100),
-('Tuercas 5mm',       'Ferretería',     2000,    120),
+('Tornillos 5mm',     'Ferreteria',     2000,    100),
+('Tuercas 5mm',       'Ferreteria',     2000,    120),
 ('Taladro',           'Herramienta',     15,   150000),
-('Cemento gris',      'Construcción',   500,   34500),
-('Pintura 4L',        'Construcción',    35,   52500),
-('Lapiz HB',          'Papelería',      400,      700),
-('Cuaderno Argollado','Papelería',      150,     2800);
+('Cemento gris',      'Construccion',   500,   34500),
+('Pintura 4L',        'Construccion',    35,   52500),
+('Lapiz HB',          'Papeleria',      400,      700),
+('Cuaderno Argollado','Papeleria',      150,     2800);
 
 -- =================== MOVIMIENTOS ===================
 -- Entrada de productos a bodega central (por Ana)
@@ -59,11 +59,10 @@ INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
 
 -- =================== AUDITORIA ===================
 INSERT INTO auditoria (tipo_operacion, usuario_id, entidad, valor_antes, valor_despues) VALUES
-('INSERT',  2, 'producto',  NULL, '{"nombre":"Tornillos 5mm","categoria":"Ferretería","stock":2000,"precio":100}'),
+('INSERT',  2, 'producto',  NULL, '{"nombre":"Tornillos 5mm","categoria":"Ferreteria","stock":2000,"precio":100}'),
 ('INSERT',  3, 'bodega',    NULL, '{"nombre":"Bodega Occidente","capacidad":350,"ubicacion":"Av. 82 #118-30"}'),
 ('UPDATE',  2, 'producto',  '{"stock":2000}', '{"stock":2300}'),
 ('UPDATE',  3, 'producto',  '{"stock":500}',  '{"stock":490}'),
 ('INSERT',  2, 'movimiento', NULL, '{"tipo_movimiento":"TRANSFERENCIA"}'),
 ('DELETE',  1, 'producto', '{"nombre":"Papel Bond"}', NULL),
 ('UPDATE',  2, 'bodega',   '{"capacidad":300}', '{"capacidad":350}');
-
