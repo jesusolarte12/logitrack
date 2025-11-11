@@ -1,68 +1,110 @@
 USE LogiTrack;
 
--- =================== USUARIOS ===================
-INSERT INTO usuario (username, password, nombre, email, rol) VALUES
-('admin',    'admin_hash',     'Administrador General',     'admin@empresa.com',    'ADMIN'),
-('bodega1',  'bodega1_hash',   'Ana Torres',                'ana@empresa.com',      'EMPLEADO'),
-('bodega2',  'bodega2_hash',   'Luis Martinez',             'luis@empresa.com',     'EMPLEADO'),
-('invitado', 'invitado_hash',  'Invitado de Auditoria',     'audit@empresa.com',    'EMPLEADO');
+-- ===================== USUARIOS =====================
+INSERT INTO usuario (username, password, nombre, cargo, documento, email, rol) VALUES
+('admin',  'admin123',
+ 'Administrador General', 'Administrador', '100000001', 'admin@empresa.com', 'ADMIN'),
 
--- =================== BODEGAS ===================
+('ana',    'ana123',
+ 'Ana Torres', 'Operaria', '100000002', 'ana@empresa.com', 'EMPLEADO'),
+
+('luis',   'luis123',
+ 'Luis Martinez', 'Auxiliar', '100000003', 'luis@empresa.com', 'EMPLEADO'),
+
+('audit',  'auditoria123',
+ 'Auditoria Interna', 'Auditor', '100000004', 'audit@empresa.com', 'EMPLEADO');
+
+
+-- ===================== CATEGORIAS =====================
+INSERT INTO categoria (nombre) VALUES
+('Ferreteria'),   -- ID 1
+('Herramienta'),  -- ID 2
+('Construccion'), -- ID 3
+('Papeleria');    -- ID 4
+
+
+-- ===================== PRODUCTOS =====================
+INSERT INTO producto (nombre, categoria_id, precio) VALUES
+('Tornillos 5mm',       1, 100),
+('Tuercas 5mm',         1, 120),
+('Taladro',             2, 150000),
+('Cemento gris 50kg',   3, 34500),
+('Pintura 4L',          3, 52500),
+('Lapiz HB',            4, 700),
+('Cuaderno Argollado',  4, 2800);
+
+
+-- ===================== BODEGAS =====================
 INSERT INTO bodega (nombre, ubicacion, capacidad, encargado_id) VALUES
-('Bodega Central',    'Cra 7 #45-60',            500,   2),
-('Bodega Occidente',  'Av. 82 #118-30',          350,   3);
+('Bodega Central',   'Cra 7 #45-60',    500, 2),  -- Ana
+('Bodega Occidente', 'Av 82 #118-30',   350, 3);  -- Luis
 
--- =================== PRODUCTOS ===================
-INSERT INTO producto (nombre, categoria, stock, precio) VALUES
-('Tornillos 5mm',     'Ferreteria',     2000,    100),
-('Tuercas 5mm',       'Ferreteria',     2000,    120),
-('Taladro',           'Herramienta',     15,   150000),
-('Cemento gris',      'Construccion',   500,   34500),
-('Pintura 4L',        'Construccion',    35,   52500),
-('Lapiz HB',          'Papeleria',      400,      700),
-('Cuaderno Argollado','Papeleria',      150,     2800);
 
--- =================== MOVIMIENTOS ===================
--- Entrada de productos a bodega central (por Ana)
-INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id, bodega_destino_id)
-VALUES ('ENTRADA', 2, NULL, 1);  -- Movimiento ID: 1
+-- ===================== INVENTARIO =====================
+-- INVENTARIO BASE PARA PRUEBAS
+-- Bodega Central (ID 1)
+INSERT INTO inventario (bodega_id, producto_id, stock) VALUES
+(1, 1, 1000), -- Tornillos
+(1, 2, 800),  -- Tuercas
+(1, 3, 10),   -- Taladro
+(1, 4, 200),  -- Cemento
+(1, 5, 20),   -- Pintura
+(1, 6, 300),  -- Lapiz
+(1, 7, 100);  -- Cuadernos
 
-INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
-(1, 1, 300),   -- 300 Tornillos 5mm
-(1, 2, 200),   -- 200 Tuercas 5mm
-(1, 4, 50);    -- 50 Cemento gris
+-- Bodega Occidente (ID 2)
+INSERT INTO inventario (bodega_id, producto_id, stock) VALUES
+(2, 1, 300),
+(2, 3, 5),
+(2, 4, 100),
+(2, 7, 40);
 
--- Salida de productos desde bodega central (por Luis)
-INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id, bodega_destino_id)
-VALUES ('SALIDA', 3, 1, NULL);   -- Movimiento ID: 2
 
-INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
-(2, 1, 50),    -- 50 Tornillos 5mm
-(2, 4, 10),    -- 10 Cemento gris
-(2, 6, 20);    -- 20 Lapiz HB
-
--- Transferencia de productos entre bodegas (Ana transfiere de central a occidente)
-INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id, bodega_destino_id)
-VALUES ('TRANSFERENCIA', 2, 1, 2);   -- Movimiento ID: 3
+-- ===================== MOVIMIENTOS =====================
+-- 1) ENTRADA a Bodega Central por ANA
+INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_destino_id)
+VALUES ('ENTRADA', 2, 1); -- ID: 1
 
 INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
-(3, 5, 5),    -- 5 Pintura 4L
-(3, 7, 40);   -- 40 Cuaderno Argollado
+(1, 1, 300),
+(1, 2, 200),
+(1, 4, 50);
 
--- Nueva entrada en bodega occidente por Luis
-INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id, bodega_destino_id)
-VALUES ('ENTRADA', 3, NULL, 2);   -- Movimiento ID: 4
+
+-- 2) SALIDA desde Bodega Central por LUIS
+INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id)
+VALUES ('SALIDA', 3, 1); -- ID: 2
 
 INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
-(4, 3, 2),   -- 2 Taladros
-(4, 7, 25);  -- 25 Cuaderno Argollado
+(2, 1, 50),
+(2, 4, 10),
+(2, 6, 20);
 
--- =================== AUDITORIA ===================
-INSERT INTO auditoria (tipo_operacion, usuario_id, entidad, valor_antes, valor_despues) VALUES
-('INSERT',  2, 'producto',  NULL, '{"nombre":"Tornillos 5mm","categoria":"Ferreteria","stock":2000,"precio":100}'),
-('INSERT',  3, 'bodega',    NULL, '{"nombre":"Bodega Occidente","capacidad":350,"ubicacion":"Av. 82 #118-30"}'),
-('UPDATE',  2, 'producto',  '{"stock":2000}', '{"stock":2300}'),
-('UPDATE',  3, 'producto',  '{"stock":500}',  '{"stock":490}'),
-('INSERT',  2, 'movimiento', NULL, '{"tipo_movimiento":"TRANSFERENCIA"}'),
-('DELETE',  1, 'producto', '{"nombre":"Papel Bond"}', NULL),
-('UPDATE',  2, 'bodega',   '{"capacidad":300}', '{"capacidad":350}');
+
+-- 3) TRANSFERENCIA Central -> Occidente (por ANA)
+INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id, bodega_destino_id)
+VALUES ('TRANSFERENCIA', 2, 1, 2); -- ID: 3
+
+INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
+(3, 5, 5),
+(3, 7, 40);
+
+
+-- 4) ENTRADA a Bodega Occidente (por LUIS)
+INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_destino_id)
+VALUES ('ENTRADA', 3, 2); -- ID: 4
+
+INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
+(4, 3, 2),
+(4, 7, 25);
+
+
+-- ===================== AUDITORIA =====================
+INSERT INTO auditoria (tipo_operacion, usuario_id, entidad, registro_id, valor_antes, valor_despues) VALUES
+('INSERT', 2, 'producto',   1, NULL, '{"nombre":"Tornillos 5mm"}'),
+('INSERT', 3, 'bodega',     2, NULL, '{"nombre":"Bodega Occidente"}'),
+('UPDATE', 2, 'inventario', 1, '{"stock":1000}', '{"stock":1300}'),
+('UPDATE', 3, 'inventario', 4, '{"stock":100}',  '{"stock":90}'),
+('INSERT', 2, 'movimiento', 3, NULL, '{"tipo_movimiento":"TRANSFERENCIA"}'),
+('DELETE', 1, 'producto',   99, '{"nombre":"Producto Eliminado"}', NULL),
+('UPDATE', 2, 'bodega',     2, '{"capacidad":300}', '{"capacidad":350}');

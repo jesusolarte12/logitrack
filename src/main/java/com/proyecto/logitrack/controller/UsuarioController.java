@@ -16,7 +16,7 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // 🔹 Mostrar todos los usuarios
+    // Mostrar todos los usuarios
     @GetMapping
     public List<UsuarioDTO> listarUsuarios() {
         return usuarioService.listarUsuarios();
