@@ -1,11 +1,7 @@
 package com.proyecto.logitrack.entities;
 
-import com.proyecto.logitrack.enums.UsuarioRolEnum;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,29 +12,17 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "categoria")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @ToString
-public class Usuario {
+public class Categoria {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String username;
-
-    @Column(nullable = false, length = 255)
-    private String password;
-
-    @Column(nullable = false, length = 100)
     private String nombre;
-
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UsuarioRolEnum rol;
 }
