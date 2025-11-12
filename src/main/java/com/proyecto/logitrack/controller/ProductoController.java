@@ -20,18 +20,16 @@ import com.proyecto.logitrack.repository.CategoriaRepository;
 import com.proyecto.logitrack.service.ProductoService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/producto")
 public class ProductoController {
-private final ProductoService productoService;
-    private final CategoriaRepository categoriaRepository; // Para validar categoría
-
-    public ProductoController(ProductoService productoService, CategoriaRepository categoriaRepository) {
-        this.productoService = productoService;
-        this.categoriaRepository = categoriaRepository;
-    }
-
+    
+    private final ProductoService productoService;
+    private final CategoriaRepository categoriaRepository; 
+    
     // Listar todos los productos
     @GetMapping("/listar")
     public ResponseEntity<List<Producto>> getAllProductos() {
