@@ -57,4 +57,33 @@ public class UsuarioService {
 
         usuarioRepository.delete(usuario);
     }
+
+    public UsuarioDTO actualizarUsuarioParcial(String documento, UsuarioDTO datosActualizados) {
+        Usuario usuarioExistente = usuarioRepository.findByDocumento(documento)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con documento: " + documento));
+
+        usuarioRepository.actualizarUsuarioParcial(
+            documento,
+            datosActualizados.getUsername(),
+            datosActualizados.getPassword(),
+            datosActualizados.getNombre(),
+            datosActualizados.getCargo(),
+            datosActualizados.getEmail(),
+            datosActualizados.getRol()
+        );
+
+        Usuario usuarioActualizado = usuarioRepository.findByDocumento(documento)
+            .orElseThrow(() -> new RuntimeException("Error al actualizar el usuario"));
+
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setUsername(usuarioActualizado.getUsername());
+        dto.setPassword(usuarioActualizado.getPassword());
+        dto.setNombre(usuarioActualizado.getNombre());
+        dto.setCargo(usuarioActualizado.getCargo());
+        dto.setDocumento(usuarioActualizado.getDocumento());
+        dto.setEmail(usuarioActualizado.getEmail());
+        dto.setRol(usuarioActualizado.getRol());
+
+        return dto;
+    }
 }
