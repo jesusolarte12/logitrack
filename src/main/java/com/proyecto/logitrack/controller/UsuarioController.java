@@ -46,5 +46,14 @@ public class UsuarioController {
         usuarioService.eliminarPorDocumento(documento);
         return ResponseEntity.ok("Usuario eliminado correctamente");
     }
+
+    @PatchMapping("/actualizar/{documento}")
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(
+            @PathVariable String documento,
+            @RequestBody UsuarioDTO usuarioDTO) {
+
+        UsuarioDTO actualizado = usuarioService.actualizarUsuarioParcial(documento, usuarioDTO);
+        return ResponseEntity.ok(actualizado);
+    }
     
 }
