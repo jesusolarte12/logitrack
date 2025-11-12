@@ -1,24 +1,50 @@
 package com.proyecto.logitrack.controller;
 
+import com.proyecto.logitrack.dto.UsuarioDTO;
+import com.proyecto.logitrack.entities.Usuario;
+import com.proyecto.logitrack.service.UsuarioService;
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import com.proyecto.logitrack.dto.UsuarioDTO;
-import com.proyecto.logitrack.service.UsuarioService;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/usuario")
 public class UsuarioController {
+
     @Autowired
     private UsuarioService usuarioService;
 
-    // Mostrar todos los usuarios
+    //Lista todos los usuarios
     @GetMapping
-    public List<UsuarioDTO> listarUsuarios() {
-        return usuarioService.listarUsuarios();
+    public ResponseEntity<List<Usuario>> listarUsuarios() {
+        List<Usuario> usuarios = usuarioService.listarUsuarios();
+        return ResponseEntity.ok(usuarios);
     }
+
+    //Crear Nuevo Usuario
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+        Usuario nuevoUsuario = usuarioService.crearUsuario(usuarioDTO);
+        return ResponseEntity.ok(nuevoUsuario);
+    }
+
+    //Obtener usuario por documento
+    @GetMapping("/buscar/{documento}")
+    public ResponseEntity<UsuarioDTO> obtenerPorDocumento(@PathVariable String documento) {
+        UsuarioDTO usuario = usuarioService.obtenerPorDocumento(documento);
+        return ResponseEntity.ok(usuario);
+    }
+
+    //Eliminar por el documento del usuario
+    @DeleteMapping("/eliminar/{documento}")
+    public ResponseEntity<String> eliminarPorDocumento(@PathVariable String documento) {
+        usuarioService.eliminarPorDocumento(documento);
+        return ResponseEntity.ok("Usuario eliminado correctamente");
+    }
+    
 }
