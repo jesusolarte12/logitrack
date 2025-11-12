@@ -34,8 +34,8 @@ CREATE TABLE producto (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(80) NOT NULL,
     categoria_id INT NOT NULL,
-    precio DECIMAL(12,2) NOT NULL CHECK (precio >= 0),
-
+    precio_compra DECIMAL(10,2) NOT NULL CHECK (precio_compra >= 0),
+    precio_venta DECIMAL(10,2) NOT NULL CHECK (precio_venta >= 0),
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
 );
 
@@ -45,10 +45,8 @@ CREATE TABLE inventario (
     bodega_id INT NOT NULL,
     producto_id INT NOT NULL,
     stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),
-
     FOREIGN KEY (bodega_id) REFERENCES bodega(id) ON DELETE CASCADE,
     FOREIGN KEY (producto_id) REFERENCES producto(id) ON DELETE CASCADE,
-
     UNIQUE KEY ux_bodega_producto (bodega_id, producto_id)
 );
 
@@ -60,11 +58,9 @@ CREATE TABLE movimiento (
     usuario_id INT NOT NULL,
     bodega_origen_id INT,
     bodega_destino_id INT,
-
     FOREIGN KEY (usuario_id) REFERENCES usuario(id),
     FOREIGN KEY (bodega_origen_id) REFERENCES bodega(id),
     FOREIGN KEY (bodega_destino_id) REFERENCES bodega(id),
-
     CHECK (
         NOT (
             tipo_movimiento = 'TRANSFERENCIA'
@@ -81,7 +77,6 @@ CREATE TABLE movimiento_detalle (
     movimiento_id INT NOT NULL,
     producto_id INT NOT NULL,
     cantidad INT NOT NULL CHECK (cantidad > 0),
-
     FOREIGN KEY (movimiento_id) REFERENCES movimiento(id) ON DELETE CASCADE,
     FOREIGN KEY (producto_id) REFERENCES producto(id)
 );
@@ -96,7 +91,6 @@ CREATE TABLE auditoria (
     registro_id INT NOT NULL,
     valor_antes TEXT,
     valor_despues TEXT,
-
     FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
 

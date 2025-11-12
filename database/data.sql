@@ -24,14 +24,14 @@ INSERT INTO categoria (nombre) VALUES
 
 
 -- ===================== PRODUCTOS =====================
-INSERT INTO producto (nombre, categoria_id, precio) VALUES
-('Tornillos 5mm',       1, 100),
-('Tuercas 5mm',         1, 120),
-('Taladro',             2, 150000),
-('Cemento gris 50kg',   3, 34500),
-('Pintura 4L',          3, 52500),
-('Lapiz HB',            4, 700),
-('Cuaderno Argollado',  4, 2800);
+INSERT INTO producto (nombre, categoria_id, precio_compra, precio_venta) VALUES
+('Tornillos 5mm',       1, 80,     100),
+('Tuercas 5mm',         1, 90,     120),
+('Taladro',             2, 120000, 150000),
+('Cemento gris 50kg',   3, 29000,  34500),
+('Pintura 4L',          3, 44000,  52500),
+('Lapiz HB',            4, 500,    700),
+('Cuaderno Argollado',  4, 2200,   2800);
 
 
 -- ===================== BODEGAS =====================
