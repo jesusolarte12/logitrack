@@ -51,19 +51,22 @@ public class ProductoController {
     // Crear producto
     @PostMapping("/create")
     public ResponseEntity<Producto> createProducto(@Valid @RequestBody ProductoDTO productoDTO) {
-        // Buscar categoría una sola vez
-        Categoria categoria = categoriaRepository.findById(productoDTO.getCategoriaId())
-            .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + productoDTO.getCategoriaId()));
+        // Validar existencia de categoría sin cargarla completamente
+        if (productoDTO.getCategoriaId() == null || !categoriaRepository.existsById(productoDTO.getCategoriaId())) {
+            throw new RuntimeException("Categoría no encontrada con id: " + productoDTO.getCategoriaId());
+        }
 
-        // Mapear DTO a entidad
+        // Mapear DTO a entidad usando referencia ligera a Categoria (solo id)
         Producto producto = new Producto();
         producto.setNombre(productoDTO.getNombre());
+        Categoria categoria = new Categoria();
+        categoria.setId(productoDTO.getCategoriaId());
         producto.setCategoria(categoria);
         producto.setPrecioCompra(productoDTO.getPrecioCompra());
         producto.setPrecioVenta(productoDTO.getPrecioVenta());
 
         Producto nuevoProducto = productoService.createProducto(producto);
-        // Registrar auditoría (INSERT)
+        // Registrar auditoría (INSERT) usando snapshot DTO para evitar serializar relaciones
         auditoriaService.registrar("INSERT", "producto", nuevoProducto.getId(), null, nuevoProducto, null);
         return ResponseEntity.ok(nuevoProducto);
     }
@@ -83,10 +86,12 @@ public class ProductoController {
             producto.setNombre(productoDTO.getNombre());
         }
         if (productoDTO.getCategoriaId() != null) {
-            producto.setCategoria(
-                categoriaRepository.findById(productoDTO.getCategoriaId())
-                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + productoDTO.getCategoriaId()))
-            );
+            if (!categoriaRepository.existsById(productoDTO.getCategoriaId())) {
+                throw new RuntimeException("Categoría no encontrada con id: " + productoDTO.getCategoriaId());
+            }
+            Categoria c = new Categoria();
+            c.setId(productoDTO.getCategoriaId());
+            producto.setCategoria(c);
         }
         if (productoDTO.getPrecioCompra() != null) {
             producto.setPrecioCompra(productoDTO.getPrecioCompra());

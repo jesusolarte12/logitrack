@@ -56,11 +56,22 @@ public class InventarioServiceImpl implements InventarioService {
             throw new RuntimeException("La bodega y el producto son obligatorios");
         }
 
-        Bodega bodega = bodegaRepository.findById(inventario.getBodega().getId())
-                .orElseThrow(() -> new RuntimeException("Bodega no encontrada con id: " + inventario.getBodega().getId()));
+        // Validar existencia sin cargar entidades completas (evita SELECT que traiga columnas inexistentes)
+        Integer bodegaId = inventario.getBodega().getId();
+        Integer productoId = inventario.getProducto().getId();
+        if (bodegaId == null || !bodegaRepository.existsById(bodegaId)) {
+            throw new RuntimeException("Bodega no encontrada con id: " + bodegaId);
+        }
+        if (productoId == null || !productoRepository.existsById(productoId)) {
+            throw new RuntimeException("Producto no encontrado con id: " + productoId);
+        }
 
-        Producto producto = productoRepository.findById(inventario.getProducto().getId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + inventario.getProducto().getId()));
+        // Crear referencias ligeras en lugar de cargar las entidades (solo id)
+        Bodega bodega = new Bodega();
+        bodega.setId(bodegaId);
+
+        Producto producto = new Producto();
+        producto.setId(productoId);
 
         return inventarioRepository.findByBodegaIdAndProductoId(bodega.getId(), producto.getId())
                 .map(existing -> {
@@ -91,14 +102,22 @@ public class InventarioServiceImpl implements InventarioService {
                 .orElseThrow(() -> new RuntimeException("Inventario con id " + inventario.getId() + " no encontrado"));
 
         if (inventario.getBodega() != null) {
-            Bodega bodega = bodegaRepository.findById(inventario.getBodega().getId())
-                    .orElseThrow(() -> new RuntimeException("Bodega no encontrada con id: " + inventario.getBodega().getId()));
+            Integer bodegaId = inventario.getBodega().getId();
+            if (bodegaId == null || !bodegaRepository.existsById(bodegaId)) {
+                throw new RuntimeException("Bodega no encontrada con id: " + bodegaId);
+            }
+            Bodega bodega = new Bodega();
+            bodega.setId(bodegaId);
             existing.setBodega(bodega);
         }
 
         if (inventario.getProducto() != null) {
-            Producto producto = productoRepository.findById(inventario.getProducto().getId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + inventario.getProducto().getId()));
+            Integer productoId = inventario.getProducto().getId();
+            if (productoId == null || !productoRepository.existsById(productoId)) {
+                throw new RuntimeException("Producto no encontrado con id: " + productoId);
+            }
+            Producto producto = new Producto();
+            producto.setId(productoId);
             existing.setProducto(producto);
         }
 

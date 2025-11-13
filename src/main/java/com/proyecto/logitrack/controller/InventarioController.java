@@ -56,11 +56,20 @@ public class InventarioController {
     // Crear inventario
     @PostMapping("/create")
     public ResponseEntity<InventarioDTO> createInventario(@Valid @RequestBody InventarioDTO dto) {
-        Bodega bodega = bodegaRepository.findById(dto.getBodegaId())
-                .orElseThrow(() -> new RuntimeException("Bodega no encontrada con id: " + dto.getBodegaId()));
+        // Validar existencia de referencias sin cargar entidades completas (evita SELECT con joins)
+        if (dto.getBodegaId() == null || !bodegaRepository.existsById(dto.getBodegaId())) {
+            throw new RuntimeException("Bodega no encontrada con id: " + dto.getBodegaId());
+        }
+        if (dto.getProductoId() == null || !productoRepository.existsById(dto.getProductoId())) {
+            throw new RuntimeException("Producto no encontrado con id: " + dto.getProductoId());
+        }
 
-        Producto producto = productoRepository.findById(dto.getProductoId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + dto.getProductoId()));
+        // Crear referencias ligeras (solo id) para evitar que JPA haga un SELECT completo
+        Bodega bodega = new Bodega();
+        bodega.setId(dto.getBodegaId());
+
+        Producto producto = new Producto();
+        producto.setId(dto.getProductoId());
 
         Inventario inventario = new Inventario();
         inventario.setBodega(bodega);
@@ -68,7 +77,7 @@ public class InventarioController {
         inventario.setStock(dto.getStock());
 
         Inventario nuevo = inventarioService.createInventario(inventario);
-        auditoriaService.registrar("INSERT", "inventario", nuevo.getId(), null, nuevo, null);
+        auditoriaService.registrar("INSERT", "inventario", nuevo.getId(), null, toDto(nuevo), null);
         return ResponseEntity.ok(toDto(nuevo));
     }
 
@@ -84,14 +93,20 @@ public class InventarioController {
         inventario.setId(id);
 
         if (dto.getBodegaId() != null) {
-            Bodega bodega = bodegaRepository.findById(dto.getBodegaId())
-                    .orElseThrow(() -> new RuntimeException("Bodega no encontrada con id: " + dto.getBodegaId()));
+            if (!bodegaRepository.existsById(dto.getBodegaId())) {
+                throw new RuntimeException("Bodega no encontrada con id: " + dto.getBodegaId());
+            }
+            Bodega bodega = new Bodega();
+            bodega.setId(dto.getBodegaId());
             inventario.setBodega(bodega);
         }
 
         if (dto.getProductoId() != null) {
-            Producto producto = productoRepository.findById(dto.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + dto.getProductoId()));
+            if (!productoRepository.existsById(dto.getProductoId())) {
+                throw new RuntimeException("Producto no encontrado con id: " + dto.getProductoId());
+            }
+            Producto producto = new Producto();
+            producto.setId(dto.getProductoId());
             inventario.setProducto(producto);
         }
 
