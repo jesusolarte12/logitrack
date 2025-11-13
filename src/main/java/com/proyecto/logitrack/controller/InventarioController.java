@@ -21,6 +21,8 @@ import com.proyecto.logitrack.entities.Producto;
 import com.proyecto.logitrack.repository.BodegaRepository;
 import com.proyecto.logitrack.repository.ProductoRepository;
 import com.proyecto.logitrack.service.InventarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.proyecto.logitrack.service.AuditoriaService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,6 +35,8 @@ public class InventarioController {
     private final InventarioService inventarioService;
     private final BodegaRepository bodegaRepository;
     private final ProductoRepository productoRepository;
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     // Listar todos los inventarios (devuelve DTOs para evitar problemas de serialización)
     @GetMapping("/listar")
@@ -64,6 +68,7 @@ public class InventarioController {
         inventario.setStock(dto.getStock());
 
         Inventario nuevo = inventarioService.createInventario(inventario);
+        auditoriaService.registrar("INSERT", "inventario", nuevo.getId(), null, nuevo, null);
         return ResponseEntity.ok(toDto(nuevo));
     }
 
@@ -71,6 +76,10 @@ public class InventarioController {
     @PutMapping("/update/{id}")
     public ResponseEntity<InventarioDTO> updateInventario(@PathVariable Integer id,
                                                        @RequestBody InventarioDTO dto) {
+        // Obtener estado anterior y crear una copia (DTO) para evitar que JPA lo modifique
+        Inventario antes = inventarioService.getInventarioById(id);
+        InventarioDTO antesDto = toDto(antes); // snapshot antes de la actualización
+
         Inventario inventario = new Inventario();
         inventario.setId(id);
 
@@ -91,13 +100,21 @@ public class InventarioController {
         }
 
         Inventario updated = inventarioService.updateInventario(inventario);
-        return ResponseEntity.ok(toDto(updated));
+        // Crear snapshot del estado después en DTO (detached)
+        InventarioDTO despuesDto = toDto(updated);
+        // Registrar auditoría usando snapshots DTO para valorAntes/valorDespues
+        auditoriaService.registrar("UPDATE", "inventario", updated.getId(), antesDto, despuesDto, null);
+        return ResponseEntity.ok(despuesDto);
     }
 
     // Eliminar inventario
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteInventario(@PathVariable Integer id) {
+        // Tomar snapshot antes de eliminar
+        Inventario antes = inventarioService.getInventarioById(id);
+        InventarioDTO antesDto = toDto(antes);
         inventarioService.deleteInventario(id);
+        auditoriaService.registrar("DELETE", "inventario", id, antesDto, null, null);
         return ResponseEntity.noContent().build();
     }
 

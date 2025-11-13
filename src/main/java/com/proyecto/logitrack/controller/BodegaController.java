@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.logitrack.service.BodegaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.proyecto.logitrack.service.AuditoriaService;
 
 import lombok.AllArgsConstructor;
 
@@ -33,6 +35,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class BodegaController {
 
     private final BodegaService bodegaService;
+    @Autowired
+    private AuditoriaService auditoriaService;
     
     // Listar todas las bodegas
     @GetMapping("/listar")
@@ -53,21 +57,26 @@ public class BodegaController {
     public ResponseEntity<Bodega> createBodega (@Valid @RequestBody Bodega bodega) {
 
         Bodega newBodega = bodegaService.createBodega(bodega);
+        auditoriaService.registrar("INSERT", "bodega", newBodega.getId(), null, newBodega, null);
         return ResponseEntity.ok(newBodega);
     }
 
     // Actualizar bodega
     @PutMapping("/update/{id}")
     public ResponseEntity<Bodega> updateBodega(@PathVariable Integer id, @RequestBody Bodega bodega) {
+        Bodega antes = bodegaService.getBodegaById(id);
         bodega.setId(id);
         Bodega actualizada = bodegaService.updateBodega(bodega);
+        auditoriaService.registrar("UPDATE", "bodega", actualizada.getId(), antes, actualizada, null);
         return ResponseEntity.ok(actualizada);
     }
     
     // Eliminar bodega
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteBodega(@PathVariable Integer id) {
+        Bodega antes = bodegaService.getBodegaById(id);
         bodegaService.deleteBodega(id); // o deleteBodega(id) si renombras el método
+        auditoriaService.registrar("DELETE", "bodega", id, antes, null, null);
         return ResponseEntity.noContent().build();
     }
 

@@ -18,6 +18,8 @@ import com.proyecto.logitrack.entities.Categoria;
 import com.proyecto.logitrack.entities.Producto;
 import com.proyecto.logitrack.repository.CategoriaRepository;
 import com.proyecto.logitrack.service.ProductoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.proyecto.logitrack.service.AuditoriaService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,8 @@ public class ProductoController {
     
     private final ProductoService productoService;
     private final CategoriaRepository categoriaRepository; 
+    @Autowired
+    private AuditoriaService auditoriaService;
     
     // Listar todos los productos
     @GetMapping("/listar")
@@ -59,6 +63,8 @@ public class ProductoController {
         producto.setPrecioVenta(productoDTO.getPrecioVenta());
 
         Producto nuevoProducto = productoService.createProducto(producto);
+        // Registrar auditoría (INSERT)
+        auditoriaService.registrar("INSERT", "producto", nuevoProducto.getId(), null, nuevoProducto, null);
         return ResponseEntity.ok(nuevoProducto);
     }
 
@@ -68,6 +74,9 @@ public class ProductoController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Integer id,
                                                     @RequestBody ProductoDTO productoDTO) {
+        // obtener estado anterior
+        Producto antes = productoService.getProductoById(id);
+
         Producto producto = new Producto();
         producto.setId(id);
         if (productoDTO.getNombre() != null) {
@@ -87,13 +96,18 @@ public class ProductoController {
         }
 
         Producto updatedProducto = productoService.updateProducto(producto);
+        // Registrar auditoría (UPDATE)
+        auditoriaService.registrar("UPDATE", "producto", updatedProducto.getId(), antes, updatedProducto, null);
         return ResponseEntity.ok(updatedProducto);
     }
 
     // Eliminar producto
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Integer id) {
+        // obtener antes de eliminar
+        Producto antes = productoService.getProductoById(id);
         productoService.deleteProducto(id);
+        auditoriaService.registrar("DELETE", "producto", id, antes, null, null);
         return ResponseEntity.noContent().build();
     }
 
