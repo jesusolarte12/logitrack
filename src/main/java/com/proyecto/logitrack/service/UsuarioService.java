@@ -1,13 +1,13 @@
 package com.proyecto.logitrack.service;
 
-import com.proyecto.logitrack.dto.UsuarioDTO;
-import com.proyecto.logitrack.entities.Usuario;
-import com.proyecto.logitrack.repository.UsuarioRepository;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.proyecto.logitrack.dto.UsuarioDTO;
+import com.proyecto.logitrack.entities.Usuario;
+import com.proyecto.logitrack.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
@@ -20,6 +20,24 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    //Metodo para buscar usuario por username
+    public UsuarioDTO obtenerPorUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con username: " + username));
+
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setUsername(usuario.getUsername());
+        usuarioDTO.setPassword(usuario.getPassword());
+        usuarioDTO.setNombre(usuario.getNombre());
+        usuarioDTO.setCargo(usuario.getCargo());
+        usuarioDTO.setDocumento(usuario.getDocumento());
+        usuarioDTO.setEmail(usuario.getEmail());
+        usuarioDTO.setRol(usuario.getRol());
+
+        return usuarioDTO;
+    }
+
+    
     //Metodo crearUsuario para crear un nuevo usuario
     public Usuario crearUsuario(UsuarioDTO usuarioDTO) {
         Usuario usuario = new Usuario();

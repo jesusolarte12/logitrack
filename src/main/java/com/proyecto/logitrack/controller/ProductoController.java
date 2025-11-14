@@ -2,6 +2,7 @@ package com.proyecto.logitrack.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +18,8 @@ import com.proyecto.logitrack.dto.ProductoDTO;
 import com.proyecto.logitrack.entities.Categoria;
 import com.proyecto.logitrack.entities.Producto;
 import com.proyecto.logitrack.repository.CategoriaRepository;
-import com.proyecto.logitrack.service.ProductoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.proyecto.logitrack.service.AuditoriaService;
+import com.proyecto.logitrack.service.ProductoService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -77,8 +77,10 @@ public class ProductoController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Integer id,
                                                     @RequestBody ProductoDTO productoDTO) {
-        // obtener estado anterior
+        // obtener estado anterior y crear snapshot DTO (detached)
         Producto antes = productoService.getProductoById(id);
+        ProductoDTO antesDto = new ProductoDTO(antes.getId(), antes.getNombre(), antes.getCategoria() != null ? antes.getCategoria().getId() : null,
+            antes.getPrecioCompra(), antes.getPrecioVenta());
 
         Producto producto = new Producto();
         producto.setId(id);
@@ -101,18 +103,23 @@ public class ProductoController {
         }
 
         Producto updatedProducto = productoService.updateProducto(producto);
-        // Registrar auditoría (UPDATE)
-        auditoriaService.registrar("UPDATE", "producto", updatedProducto.getId(), antes, updatedProducto, null);
+        // Crear snapshot del estado después en DTO (detached)
+        ProductoDTO despuesDto = new ProductoDTO(updatedProducto.getId(), updatedProducto.getNombre(), updatedProducto.getCategoria() != null ? updatedProducto.getCategoria().getId() : null,
+            updatedProducto.getPrecioCompra(), updatedProducto.getPrecioVenta());
+        // Registrar auditoría (UPDATE) usando snapshots DTO para valorAntes/valorDespues
+        auditoriaService.registrar("UPDATE", "producto", updatedProducto.getId(), antesDto, despuesDto, null);
         return ResponseEntity.ok(updatedProducto);
     }
 
     // Eliminar producto
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Integer id) {
-        // obtener antes de eliminar
+        // obtener antes de eliminar y crear snapshot DTO
         Producto antes = productoService.getProductoById(id);
+        ProductoDTO antesDto = new ProductoDTO(antes.getId(), antes.getNombre(), antes.getCategoria() != null ? antes.getCategoria().getId() : null,
+                antes.getPrecioCompra(), antes.getPrecioVenta());
         productoService.deleteProducto(id);
-        auditoriaService.registrar("DELETE", "producto", id, antes, null, null);
+        auditoriaService.registrar("DELETE", "producto", id, antesDto, null, null);
         return ResponseEntity.noContent().build();
     }
 

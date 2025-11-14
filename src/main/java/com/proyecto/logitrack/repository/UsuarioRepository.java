@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import com.proyecto.logitrack.entities.Usuario;
 import com.proyecto.logitrack.enums.UsuarioRolEnum;
 
@@ -18,6 +19,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer>{
     //Encontrar por documento
     Optional<Usuario> findByDocumento(String documento);
     
+    // Buscar por username
+    Optional<Usuario> findByUsername(String username);
+
     //Eliminar por documento
     @Transactional
     void deleteByDocumento(String documento);

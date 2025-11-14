@@ -1,17 +1,19 @@
 package com.proyecto.logitrack.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +28,9 @@ public class AuditoriaServiceImpl implements AuditoriaService {
 
     @Autowired
     private AuditoriaRepository auditoriaRepository;
+
+    @Autowired
+    private com.proyecto.logitrack.repository.UsuarioRepository usuarioRepository;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -44,8 +49,26 @@ public class AuditoriaServiceImpl implements AuditoriaService {
         a.setEntidad(entidad);
         // Id del registro afectado
         a.setRegistroId(registroId);
-        // Usuario que realizó la operación (usa valor por defecto si es null)
-        a.setUsuarioId(usuarioId != null ? usuarioId : DEFAULT_USER_ID);
+        // Usuario que realizó la operación: si no se provee, intentar extraerlo del SecurityContext
+        Integer resolvedUserId = null;
+        if (usuarioId != null) {
+            resolvedUserId = usuarioId;
+        } else {
+            try {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated()) {
+                    String username = auth.getName();
+                    if (username != null) {
+                        var opt = usuarioRepository.findByUsername(username);
+                        if (opt.isPresent()) resolvedUserId = opt.get().getId();
+                    }
+                }
+            } catch (Exception e) {
+                // ignore and fall back to default
+            }
+        }
+
+        a.setUsuarioId(resolvedUserId != null ? resolvedUserId : DEFAULT_USER_ID);
 
         // Sanitizar objetos para que las relaciones solo aparezcan como ids y no expandan otras tablas
         Object safeAntes = sanitizeForAudit(valorAntes);
@@ -99,6 +122,10 @@ public class AuditoriaServiceImpl implements AuditoriaService {
                 a.setValorDespues(safeDespues != null ? safeDespues.toString() : null);
             }
         }
+
+        // Si no hay diferencias detectadas (beforeDiff vacío), dejamos valorAntes/valorDespues en null
+        // para indicar que no hubo cambios relevantes. No serializamos los objetos completos aquí
+        // porque eso puede producir entradas idénticas en ambos campos.
 
         // Persiste y devuelve DTO
         Auditoria saved = auditoriaRepository.save(a);
