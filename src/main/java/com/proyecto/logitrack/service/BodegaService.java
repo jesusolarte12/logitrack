@@ -31,4 +31,7 @@ public interface BodegaService {
     // Obtener datos para dashboard de bodegas
     List<BodegaDashboardDTO> getBodegaDashboard();
 
+    // Obtener datos para dashboard filtrado por username (para EMPLEADO)
+    List<BodegaDashboardDTO> getBodegaDashboardByUsername(String username);
+
 }
