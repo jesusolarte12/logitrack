@@ -18,13 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.logitrack.entities.Bodega;
 import com.proyecto.logitrack.service.AuditoriaService;
 import com.proyecto.logitrack.service.BodegaService;
+import com.proyecto.logitrack.dto.BodegaDashboardDTO;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
-
-
-
 
 @RestController
 @AllArgsConstructor
@@ -97,6 +94,13 @@ public class BodegaController {
     public ResponseEntity<List<Bodega>> findByEncargado(@RequestParam String encargado) {
         List<Bodega> bodegas = bodegaService.findBynombreEncargado(encargado);
         return ResponseEntity.ok(bodegas);
+    }
+
+    // Dashboard de bodegas
+    @GetMapping("/info")
+    public ResponseEntity<List<BodegaDashboardDTO>> getBodegaDashboard() {
+        List<BodegaDashboardDTO> dashboard = bodegaService.getBodegaDashboard();
+        return ResponseEntity.ok(dashboard);
     }
     
 }

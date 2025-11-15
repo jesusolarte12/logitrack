@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.proyecto.logitrack.entities.Bodega;
+import com.proyecto.logitrack.dto.BodegaDashboardDTO;
 
 @Repository
 public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
@@ -18,5 +19,14 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
     @Query("SELECT b FROM Bodega b JOIN b.encargado u " +
        "WHERE LOWER(u.nombre) = LOWER(:nombreEncargado)")
     List<Bodega> findByNombreEncargado(@Param("nombreEncargado") String nombreEncargado);
+
+    @Query("SELECT new com.proyecto.logitrack.dto.BodegaDashboardDTO("
+        + "b.nombre, b.ubicacion, "
+        + "COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0), "
+        + "CASE WHEN COALESCE(b.capacidad,0) > 0 THEN (COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0) * 100.0 / COALESCE(b.capacidad,0)) ELSE 0 END, "
+        + "(COALESCE(b.capacidad,0) - COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0)), "
+        + "b.encargado.nombre) "
+        + "FROM Bodega b")
+    List<BodegaDashboardDTO> findBodegaDashboard();
 
 }
