@@ -32,11 +32,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         
-        // Ignorar rutas de autenticación
-        if (path.startsWith("/auth/")) {
+        // Ignorar rutas de login y register
+        if (path.equals("/auth/login") || path.equals("/auth/register")) {
             chain.doFilter(request, response);
             return;
         }
+
 
         String authHeader = request.getHeader("Authorization");
         String token = null;

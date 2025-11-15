@@ -1,0 +1,144 @@
+* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #1a1d29 0%, #0f111a 50%, #1a1d29 100%);
+        color: #e4e4e7;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+    
+    /* Estilo del menu principal */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: rgba(15, 17, 26, 0.95);
+        backdrop-filter: blur(25px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 50px;
+        z-index: 1000;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo-seccion {
+        display: flex;
+        align-items: center;
+        /* gap: 11px; */
+    }
+
+    .titulo {
+        font-size: 26px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        /* -webkit-background-clip: text; */
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+    }
+
+    .logo-subtitulo {
+        font-size: 15px;
+        color: #6b7280;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+    }
+
+    .nav-opciones {
+        display: flex;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 10px;
+        border-radius: 14px;
+        border: 3px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-item {
+        padding: 11px 28px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: 0.3s;
+        background: transparent;
+        border: none;
+        letter-spacing: 0.3px;
+    }
+
+    .nav-item:hover {
+        color: #e4e4e7;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Opcion seleccionada */
+    .nav-item.activo {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);
+    }
+
+    .nav-derecha {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .cerrar-sesion {
+        padding: 8px 16px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 10px;
+        color: #ef4444;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .cerrar-sesion:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 18px 8px 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .user-info:hover {
+        background: rgba(79, 70, 229, 0.15);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .user-detalles {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .username {
+        font-size: 15px;
+        font-weight: 600;
+        color: #e4e4e7;
+    }
+
+    .username-rol {
+        font-size: 14px;
+        color: #6b7280;
+    }

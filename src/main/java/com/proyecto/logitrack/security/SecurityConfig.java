@@ -33,14 +33,32 @@ public class SecurityConfig {
 
         // Rutas públicas y rutas protegidas
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // login y register
-                .requestMatchers("/api/test/**").authenticated() // Test endpoints
-                .requestMatchers("/api/**").authenticated() // rutas API protegidas con token
-                .requestMatchers("/docs").permitAll() // Swagger
-                .requestMatchers("/v3/api-docs/**").permitAll() // OpenAPI docs
-                .requestMatchers("/swagger-ui/**").permitAll() // Swagger UI
-                .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación
-        );
+
+        // Recursos estáticos y páginas públicas
+        .requestMatchers(
+            "/",
+            "/templates/**",
+            "/css/**",
+            "/js/**"
+        ).permitAll()
+
+        // Endpoints de autenticacion
+        .requestMatchers("/auth/login", "/auth/register").permitAll()
+        .requestMatchers("/auth/validate").authenticated()
+
+
+        // Documentación
+        .requestMatchers("/docs").permitAll()
+        .requestMatchers("/v3/api-docs/**").permitAll()
+        .requestMatchers("/swagger-ui/**").permitAll()
+
+        // API protegida
+        .requestMatchers("/api/**").authenticated()
+
+        // Todo lo demás, también protegido
+        .anyRequest().authenticated()
+    );
+
 
         // Seguridad sin sesiones (modo JWT)
         http.sessionManagement(session ->
