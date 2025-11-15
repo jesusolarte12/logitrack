@@ -43,8 +43,9 @@ public class SecurityConfig {
         ).permitAll()
 
         // Endpoints de autenticacion
-        .requestMatchers("/auth/login", "/auth/register").permitAll()
-        .requestMatchers("/auth/validate").authenticated()
+        .requestMatchers("/auth/login").permitAll()
+        .requestMatchers("/auth/register").hasRole("ADMIN")
+        .requestMatchers("/auth/validate", "/auth/userinfo").authenticated()
 
 
         // Documentación

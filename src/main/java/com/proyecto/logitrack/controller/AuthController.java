@@ -1,6 +1,7 @@
 package com.proyecto.logitrack.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,30 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @GetMapping("/userinfo")
+    public ResponseEntity<UsuarioDTO> usuarioActual(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = authentication.getName();
+
+        return usuarioRepo.findByUsername(username)
+                .map(usuario -> {
+                    UsuarioDTO dto = new UsuarioDTO();
+                    dto.setUsername(usuario.getUsername());
+                    dto.setNombre(usuario.getNombre());
+                    dto.setCargo(usuario.getCargo());
+                    dto.setDocumento(usuario.getDocumento());
+                    dto.setEmail(usuario.getEmail());
+                    dto.setRol(usuario.getRol());
+                    return ResponseEntity.ok(dto);
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+
+
     @PostMapping("/register")
     public Usuario registrar(@RequestBody UsuarioDTO dto) {
         Usuario u = new Usuario();
@@ -54,13 +79,13 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-public ResponseEntity<?> validateToken(Authentication authentication) {
+    public ResponseEntity<?> validateToken(Authentication authentication) {
 
-    if (authentication == null || !authentication.isAuthenticated()) {
-        return ResponseEntity.status(401).body("Token inválido");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Token inválido");
+        }
+
+        return ResponseEntity.ok("Token válido");
     }
 
-    return ResponseEntity.ok("Token válido");
-}
-
-}
+    }

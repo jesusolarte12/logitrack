@@ -34,8 +34,8 @@ public class AuditoriaServiceImpl implements AuditoriaService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // Si no se provee usuarioId por el contexto se usará 1 por defecto (asunción razonable).
-    private final Integer DEFAULT_USER_ID = 1;
+    // Si no se provee usuarioId por el contexto sera null.
+    private final Integer DEFAULT_USER_ID = null;
 
     @Override
     public AuditoriaDTO registrar(String tipoOperacion, String entidad, Integer registroId, Object valorAntes, Object valorDespues, Integer usuarioId) {
@@ -64,7 +64,7 @@ public class AuditoriaServiceImpl implements AuditoriaService {
                     }
                 }
             } catch (Exception e) {
-                // ignore and fall back to default
+                // Ignora y vuelve al valor por defecto
             }
         }
 
