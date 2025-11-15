@@ -23,7 +23,7 @@ function mostrarBodegas(bodegas) {
     console.log("¿Existe el contenedor?", contenedor);
 
     if (!contenedor) {
-        console.error("❌ ERROR: No existe el DIV con id='bodegaGrid'");
+        console.error("ERROR: No existe el DIV con id='bodegaGrid'");
         return;
     }
 
@@ -42,7 +42,7 @@ function mostrarBodegas(bodegas) {
                 </div>
                 <div class="bodega-stats">
                     <div class="bodega-stat">
-                        <div class="bodega-stat-value">${b.totalProductos}</div>
+                        <div class="bodega-stat-value">${b.totalProducto}</div>
                         <div class="bodega-stat-label">Total Productos</div>
                     </div>
                     <div class="bodega-stat">
@@ -50,7 +50,7 @@ function mostrarBodegas(bodegas) {
                         <div class="bodega-stat-label">Ocupación</div>
                     </div>
                     <div class="bodega-stat">
-                        <div class="bodega-stat-value">${b.espacioDisponible}</div>
+                        <div class="bodega-stat-value">${b.espacio}</div>
                         <div class="bodega-stat-label">Espacio disponible</div>
                     </div>
                     <div class="bodega-stat">
