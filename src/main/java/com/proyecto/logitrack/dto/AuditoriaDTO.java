@@ -33,4 +33,7 @@ public class AuditoriaDTO {
 
     // Valor después de la operación (serializado)
     private String valorDespues;
+
+    // Nombre legible del usuario que realizó la operación (si está disponible)
+    private String usuarioNombre;
 }

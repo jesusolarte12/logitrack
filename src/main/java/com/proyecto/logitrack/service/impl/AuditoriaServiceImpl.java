@@ -20,7 +20,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.logitrack.dto.AuditoriaDTO;
 import com.proyecto.logitrack.entities.Auditoria;
+import com.proyecto.logitrack.entities.Usuario;
+import com.proyecto.logitrack.enums.UsuarioRolEnum;
 import com.proyecto.logitrack.repository.AuditoriaRepository;
+import com.proyecto.logitrack.repository.UsuarioRepository;
 import com.proyecto.logitrack.service.AuditoriaService;
 
 @Service
@@ -30,7 +33,7 @@ public class AuditoriaServiceImpl implements AuditoriaService {
     private AuditoriaRepository auditoriaRepository;
 
     @Autowired
-    private com.proyecto.logitrack.repository.UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -130,14 +133,55 @@ public class AuditoriaServiceImpl implements AuditoriaService {
         // Persiste y devuelve DTO
         Auditoria saved = auditoriaRepository.save(a);
 
-        AuditoriaDTO dto = new AuditoriaDTO(saved.getId(), saved.getFechaHora(), saved.getTipoOperacion(), saved.getUsuarioId(), saved.getEntidad(), saved.getRegistroId(), saved.getValorAntes(), saved.getValorDespues());
+        // Resolver nombre de usuario para el DTO (si existe)
+        String usuarioNombre = null;
+        if (saved.getUsuarioId() != null) {
+            var optUser = usuarioRepository.findById(saved.getUsuarioId());
+            if (optUser.isPresent()) usuarioNombre = optUser.get().getNombre();
+        }
+
+        AuditoriaDTO dto = new AuditoriaDTO(saved.getId(), saved.getFechaHora(), saved.getTipoOperacion(), saved.getUsuarioId(), saved.getEntidad(), saved.getRegistroId(), saved.getValorAntes(), saved.getValorDespues(), usuarioNombre);
         return dto;
     }
 
     @Override
     public List<AuditoriaDTO> listarTodos() {
+        // Determinar usuario actual y rol
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Integer resolvedUserId = null;
+        boolean resolvedIsAdmin = false;
+        if (auth != null && auth.isAuthenticated()) {
+            String username = auth.getName();
+            if (username != null) {
+                var opt = usuarioRepository.findByUsername(username);
+                if (opt.isPresent()) {
+                    Usuario u = opt.get();
+                    resolvedUserId = u.getId();
+                    resolvedIsAdmin = (u.getRol() == UsuarioRolEnum.ADMIN);
+                }
+            }
+        }
+
+        final Integer currentUserId = resolvedUserId;
+        final boolean isAdmin = resolvedIsAdmin;
+
         List<Auditoria> lista = auditoriaRepository.findAll();
-        return lista.stream().map(a -> new AuditoriaDTO(a.getId(), a.getFechaHora(), a.getTipoOperacion(), a.getUsuarioId(), a.getEntidad(), a.getRegistroId(), a.getValorAntes(), a.getValorDespues())).collect(Collectors.toList());
+
+        // Si no es ADMIN, filtrar solo las auditorías del usuario actual
+        if (!isAdmin) {
+            if (currentUserId == null) return List.of();
+            lista = lista.stream().filter(a -> Objects.equals(a.getUsuarioId(), currentUserId)).collect(Collectors.toList());
+        }
+
+        // Mapear y añadir usuarioNombre al DTO
+        return lista.stream().map(a -> {
+            String usuarioNombre = null;
+            if (a.getUsuarioId() != null) {
+                var optUser = usuarioRepository.findById(a.getUsuarioId());
+                if (optUser.isPresent()) usuarioNombre = optUser.get().getNombre();
+            }
+            return new AuditoriaDTO(a.getId(), a.getFechaHora(), a.getTipoOperacion(), a.getUsuarioId(), a.getEntidad(), a.getRegistroId(), a.getValorAntes(), a.getValorDespues(), usuarioNombre);
+        }).collect(Collectors.toList());
     }
 
     // Sanitiza un objeto para auditoría: reemplaza relaciones por sus ids y evita expandir otras tablas.
