@@ -2,16 +2,16 @@ USE LogiTrack;
 
 -- ===================== USUARIOS =====================
 INSERT INTO usuario (username, password, nombre, cargo, documento, email, rol) VALUES
-('admin',  'admin123',
+('admin',  '$2b$12$iimfIRd4UapUcepDh6bl1.V/gRXoVzJmHiZMrLVZzMeTGvWIRhHyW', -- password: admin123
  'Administrador General', 'Administrador', '100000001', 'admin@empresa.com', 'ADMIN'),
 
-('ana',    'ana123',
+('ana',    '$2b$12$mnril1/B7v2k72Rf/o5boe6XedrSef/ZSEf.3YtbmIIUXnTeH66JS', -- password: ana123
  'Ana Torres', 'Operaria', '100000002', 'ana@empresa.com', 'EMPLEADO'),
 
-('luis',   'luis123',
+('luis',   '$2b$12$Z7k/gldg8QigU7lozbx8heGvJsoG71G5eVVBW.AzYVrvlr24gWh.y', -- password: luis123
  'Luis Martinez', 'Auxiliar', '100000003', 'luis@empresa.com', 'EMPLEADO'),
 
-('audit',  'auditoria123',
+('audit',  '$2b$12$uYAQsH8hSpJNoKFKEgtZNea4r3tX91pX/fhrgmYv2cpd2Nhc/1Yq.', -- password: audit123
  'Auditoria Interna', 'Auditor', '100000004', 'audit@empresa.com', 'EMPLEADO');
 
 
