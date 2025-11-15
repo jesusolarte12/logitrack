@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,34 +9,47 @@
     <link rel="stylesheet" href="../css/dashboard.css">
     <script src="../js/dashboard.js" defer></script>
 </head>
+
 <body>
-    <nav class="navbar">
-
-        <div class="logo-seccion">
-            <div>
-                <div class="titulo">LogiTrack</div>
-                <div class="logo-subtitulo">Gestión Logística</div>
+    <div id="navBarContainer">
+        <nav class="navbar">
+            <div class="logo-seccion">
+                <div>
+                    <div class="titulo">LogiTrack</div>
+                    <div class="logo-subtitulo">Gestión Logística</div>
+                </div>
             </div>
-        </div>
 
-        <div class="nav-opciones">
-            <button class="nav-item activo">Dashboard</button>
-            <button class="nav-item">Bodegas</button>
-            <button class="nav-item">Inventario</button>
-            <button class="nav-item">Movimientos</button>
-            <button class="nav-item">Auditoria</button>
-        </div>
-
-        <div class="nav-derecha">
-            <button class="cerrar-sesion">Cerrar Sesión</button>
-
-            <div class="info-usuario">
-                <div class="username" id="username">Jesus Olarte</div>
-                <div class="username-rol">Administrador</div>
+            <div class="nav-opciones">
+                <button class="nav-item activo" data-target="dashboard">Dashboard</button>
+                <button class="nav-item" data-target="bodegas">Bodegas</button>
+                <button class="nav-item" data-target="inventario">Inventario</button>
+                <button class="nav-item" data-target="movimientos">Movimientos</button>
+                <button class="nav-item" data-target="auditoria">Auditoria</button>
             </div>
-        </div>
 
-    </nav>
-    
+            <div class="nav-derecha">
+                <button class="cerrar-sesion">Cerrar Sesión</button>
+
+                <div class="info-usuario">
+                    <div class="iniciales">JO</div>
+                    <div class="user-detalles">
+                        <div class="username" id="username">Jesus Olarte</div>
+                        <div class="username-rol">Administrador</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+
+    <div id="content" style="margin-top:100px;">
+        <iframe id="bodegas" class="section" src="bodegas.html" style="width:100%; height:calc(100vh - 100px); border:none; display:none;"></iframe>
+        <iframe id="inventario" class="section" src="inventario.html" style="width:100%; height:calc(100vh - 100px); border:none; display:none;"></iframe>
+        <iframe id="movimientos" class="section" src="movimientos.html" style="width:100%; height:calc(100vh - 100px); border:none; display:none;"></iframe>
+        <iframe id="auditoria" class="section" src="auditoria.html" style="width:100%; height:calc(100vh - 100px); border:none; display:none;"></iframe>
+    </div>
+
 </body>
+
 </html>

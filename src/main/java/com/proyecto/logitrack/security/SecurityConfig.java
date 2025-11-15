@@ -63,6 +63,8 @@ public class SecurityConfig {
         // Seguridad sin sesiones (modo JWT)
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // Permitir iframes desde el mismo origen
+        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         // Filtro JWT antes del filtro estándar
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

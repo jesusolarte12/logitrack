@@ -27,9 +27,27 @@ async function validarToken() {
 // Ejecutar validación al cargar la página
 validarToken();
 
+// Cambiar sección activa y mostrar iframe correspondiente
 document.addEventListener("DOMContentLoaded", () => {
-    const btnCerrar = document.querySelector(".cerrar-sesion");
+    const navItems = document.querySelectorAll(".nav-item");
+    const iframes = document.querySelectorAll(".section");
 
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            // Cambiar activo en el navbar
+            navItems.forEach(i => i.classList.remove("activo"));
+            item.classList.add("activo");
+
+            // Mostrar el iframe correcto
+            const target = item.getAttribute("data-target");
+            iframes.forEach(frame => {
+                frame.style.display = frame.id === target ? "block" : "none";
+            });
+        });
+    });
+
+    // Cerrar sesión
+    const btnCerrar = document.querySelector(".cerrar-sesion");
     if (btnCerrar) {
         btnCerrar.addEventListener("click", () => {
             localStorage.removeItem("jwt_token");
@@ -37,3 +55,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
