@@ -3,6 +3,7 @@ package com.proyecto.logitrack.service;
 import java.util.List;
 
 import com.proyecto.logitrack.entities.Bodega;
+import com.proyecto.logitrack.dto.BodegaDashboardDTO;
 
 public interface BodegaService {
 
@@ -26,5 +27,8 @@ public interface BodegaService {
 
     // Buscar por nombre del encargado
     List<Bodega> findBynombreEncargado(String nombreEncargado);
+
+    // Obtener datos para dashboard de bodegas
+    List<BodegaDashboardDTO> getBodegaDashboard();
 
 }

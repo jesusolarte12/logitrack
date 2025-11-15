@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.proyecto.logitrack.entities.Bodega;
 import com.proyecto.logitrack.repository.BodegaRepository;
 import com.proyecto.logitrack.service.BodegaService;
+import com.proyecto.logitrack.dto.BodegaDashboardDTO;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -76,6 +77,12 @@ public class BodegaServiceImpl implements BodegaService{
     @Override
     public List<Bodega> findBynombreEncargado(String nombreEncargado) {
         return bodegaRepository.findByNombreEncargado(nombreEncargado);
+    }
+
+    // Obtener datos agregados para el dashboard
+    @Override
+    public List<BodegaDashboardDTO> getBodegaDashboard() {
+        return bodegaRepository.findBodegaDashboard();
     }
 
 }
