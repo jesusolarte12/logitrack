@@ -8,10 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BodegaDashboardDTO {
+    private Integer id;
     private String nombre;
     private String ubicacion;
     private Long totalProducto;
     private Double ocupacion;
     private Long espacio;
     private String encargado;
+    private Integer capacidad;
 }

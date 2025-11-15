@@ -21,12 +21,23 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
     List<Bodega> findByNombreEncargado(@Param("nombreEncargado") String nombreEncargado);
 
     @Query("SELECT new com.proyecto.logitrack.dto.BodegaDashboardDTO("
-        + "b.nombre, b.ubicacion, "
+        + "b.id, b.nombre, b.ubicacion, "
         + "COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0), "
         + "CASE WHEN COALESCE(b.capacidad,0) > 0 THEN (COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0) * 100.0 / COALESCE(b.capacidad,0)) ELSE 0 END, "
         + "(COALESCE(b.capacidad,0) - COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0)), "
-        + "b.encargado.nombre) "
+        + "b.encargado.nombre, b.capacidad) "
         + "FROM Bodega b")
     List<BodegaDashboardDTO> findBodegaDashboard();
+
+    // Dashboard filtrado por username del encargado (para EMPLEADO)
+    @Query("SELECT new com.proyecto.logitrack.dto.BodegaDashboardDTO("
+        + "b.id, b.nombre, b.ubicacion, "
+        + "COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0), "
+        + "CASE WHEN COALESCE(b.capacidad,0) > 0 THEN (COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0) * 100.0 / COALESCE(b.capacidad,0)) ELSE 0 END, "
+        + "(COALESCE(b.capacidad,0) - COALESCE((SELECT SUM(i.stock) FROM Inventario i WHERE i.bodega = b), 0)), "
+        + "b.encargado.nombre, b.capacidad) "
+        + "FROM Bodega b "
+        + "WHERE b.encargado.username = :username")
+    List<BodegaDashboardDTO> findBodegaDashboardByEncargado(@Param("username") String username);
 
 }

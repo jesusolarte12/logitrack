@@ -85,4 +85,10 @@ public class BodegaServiceImpl implements BodegaService{
         return bodegaRepository.findBodegaDashboard();
     }
 
+    // Obtener datos agregados filtrados por username del encargado
+    @Override
+    public List<BodegaDashboardDTO> getBodegaDashboardByUsername(String username) {
+        return bodegaRepository.findBodegaDashboardByEncargado(username);
+    }
+
 }
