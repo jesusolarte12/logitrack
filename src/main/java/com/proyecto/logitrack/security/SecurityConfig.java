@@ -53,6 +53,9 @@ public class SecurityConfig {
         .requestMatchers("/v3/api-docs/**").permitAll()
         .requestMatchers("/swagger-ui/**").permitAll()
 
+        // PERMITIR este endpoint del dashboard
+        .requestMatchers("/api/bodega/info").permitAll()
+
         // API protegida
         .requestMatchers("/api/**").authenticated()
 
