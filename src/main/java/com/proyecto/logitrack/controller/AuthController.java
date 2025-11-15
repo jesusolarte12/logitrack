@@ -40,6 +40,7 @@ public class AuthController {
         return usuarioRepo.findByUsername(username)
                 .map(usuario -> {
                     UsuarioDTO dto = new UsuarioDTO();
+                    dto.setId(usuario.getId());
                     dto.setUsername(usuario.getUsername());
                     dto.setNombre(usuario.getNombre());
                     dto.setCargo(usuario.getCargo());

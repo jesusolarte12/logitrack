@@ -1,6 +1,7 @@
 package com.proyecto.logitrack.dto;
 
 import com.proyecto.logitrack.enums.UsuarioRolEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UsuarioDTO {
+    private Integer id;
     private String username;
     private String password;
     private String nombre;
