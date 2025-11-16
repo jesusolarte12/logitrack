@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.proyecto.logitrack.dto.InventarioDetalleDTO;
 import com.proyecto.logitrack.entities.Bodega;
 import com.proyecto.logitrack.entities.Inventario;
 import com.proyecto.logitrack.entities.Producto;
@@ -163,5 +164,15 @@ public class InventarioServiceImpl implements InventarioService {
         if (inv.getBodega() != null) inv.getBodega().getId();
         if (inv.getProducto() != null) inv.getProducto().getId();
         return inv;
+    }
+
+    @Override
+    public List<InventarioDetalleDTO> getInventarioDetalleByBodegaNombre(String nombreBodega) {
+        return inventarioRepository.findInventarioDetalleByBodegaNombre(nombreBodega);
+    }
+
+    @Override
+    public List<InventarioDetalleDTO> getAllInventarioDetalle() {
+        return inventarioRepository.findAllInventarioDetalle();
     }
 }

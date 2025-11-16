@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.logitrack.dto.InventarioDTO;
+import com.proyecto.logitrack.dto.InventarioDetalleDTO;
 import com.proyecto.logitrack.entities.Bodega;
 import com.proyecto.logitrack.entities.Inventario;
 import com.proyecto.logitrack.entities.Producto;
@@ -147,6 +148,20 @@ public class InventarioController {
         List<Inventario> lista = inventarioService.findByProducto(productoId);
         List<InventarioDTO> dtos = lista.stream().map(this::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
+    }
+
+    // Obtener inventario detallado por nombre de bodega
+    @GetMapping("/detalle/bodega/{nombreBodega}")
+    public ResponseEntity<List<InventarioDetalleDTO>> getInventarioDetallePorBodega(@PathVariable String nombreBodega) {
+        List<InventarioDetalleDTO> detalle = inventarioService.getInventarioDetalleByBodegaNombre(nombreBodega);
+        return ResponseEntity.ok(detalle);
+    }
+
+    // Obtener todo el inventario detallado (todas las bodegas)
+    @GetMapping("/detalle")
+    public ResponseEntity<List<InventarioDetalleDTO>> getAllInventarioDetalle() {
+        List<InventarioDetalleDTO> detalle = inventarioService.getAllInventarioDetalle();
+        return ResponseEntity.ok(detalle);
     }
 
     // Helper: mapear entidad a DTO

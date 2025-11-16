@@ -2,6 +2,7 @@ package com.proyecto.logitrack.service;
 
 import java.util.List;
 
+import com.proyecto.logitrack.dto.InventarioDetalleDTO;
 import com.proyecto.logitrack.entities.Inventario;
 
 public interface InventarioService {
@@ -29,4 +30,10 @@ public interface InventarioService {
 
     // Buscar por bodega y producto
     Inventario findByBodegaAndProducto(Integer bodegaId, Integer productoId);
+
+    // Obtener detalle de inventario por nombre de bodega
+    List<InventarioDetalleDTO> getInventarioDetalleByBodegaNombre(String nombreBodega);
+
+    // Obtener todo el inventario detallado
+    List<InventarioDetalleDTO> getAllInventarioDetalle();
 }
