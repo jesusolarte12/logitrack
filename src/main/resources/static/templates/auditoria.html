@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría del Sistema</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/auditoria.css">
+    <script src="../js/auditoria.js" defer></script>
+</head>
+
+<body>
+    <div class="auditoria-container">
+        <header class="auditoria-header">
+            <div>
+                <h1>Auditoría del Sistema</h1>
+                <p class="subtitle">Historial completo de acciones realizadas</p>
+            </div>
+            <div class="filtros-auditoria">
+
+                <div class="inputFiltros">
+                    <label for="filtroFechaInicio">Fecha inicio</label>
+                    <input type="date" id="filtroFechaInicio">
+                </div>
+
+                <div class="inputFiltros">
+                    <label for="filtroFechaFin">Fecha fin</label>
+                    <input type="date" id="filtroFechaFin">
+                </div>
+
+                <div class="filtroBoton">
+                    <button id="btnFiltrarAuditoria">Filtrar</button>
+                </div>
+
+            </div>
+
+
+
+        </header>
+
+        <div class="box">
+            <h3>Registro de Actividades</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Usuario</th>
+                        <th>Operación</th>
+                        <th>Entidad</th>
+                        <th>Descripción</th>
+                        <th style="text-align:right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-auditoria"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal" style="display:none">
+        <div class="modal-content">
+            <h2>Detalle de la Operación</h2>
+
+            <div class="detalle">
+                <p class="label">Valor Antes:</p>
+                <div id="valor-antes" class="valor-box"></div>
+            </div>
+
+            <div class="detalle">
+                <p class="label">Valor Después:</p>
+                <div id="valor-despues" class="valor-box"></div>
+            </div>
+
+            <button id="btn-cerrar" class="btn-secondary">Cerrar</button>
+        </div>
+    </div>
+</body>
+
+</html>

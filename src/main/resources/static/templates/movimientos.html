@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimientos - LogiTrack</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/movimientos.css">
+    <script src="../js/movimientos.js" defer></script>
+</head>
+
+<body>
+    <div class="seccionMovimientos" id="seccionMovimientos">
+        <div class="encabezadoSeccion">
+            <div class="grupoTitulo">
+                <h1>Registro de Movimientos</h1>
+                <p class="subtituloSeccion">Historial completo de operaciones logísticas</p>
+            </div>
+            <div class="accionesSeccion">
+                <div class="filtroFechas">
+                    <div class="inputFecha">
+                        <label>Fecha inicio</label>
+                        <input type="date" id="fechaInicio" class="inputDate">
+                    </div>
+                    <div class="inputFecha">
+                        <label>Fecha fin</label>
+                        <input type="date" id="fechaFin" class="inputDate">
+                    </div>
+                    <button class="boton botonPrimario" id="btnFiltrar">Filtrar</button>
+                    <button class="boton botonSecundario" id="btnCrearMovimiento">Crear movimiento</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="contenedorTabla">
+            <div class="encabezadoTabla">
+                <h3 class="tituloTabla">Registro de Actividades</h3>
+            </div>
+
+            <div class="tablaWrapper">
+                <table class="tablaMovimientos">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha/Hora</th>
+                            <th>Tipo</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaMovimientos">
+                        <tr>
+                            <td colspan="8" class="cargando">
+                                <p>Cargando movimientos...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modalOverlay" id="modalCrearMovimiento" style="display:none;">
+            <div class="modalContent">
+                <h3>Crear nuevo movimiento</h3>
+
+                <div class="modalBody">
+                    <label>Tipo de movimiento</label>
+                    <select id="tipoMovimiento">
+                        <option value="ENTRADA">ENTRADA</option>
+                        <option value="SALIDA">SALIDA</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+
+                    <div id="rowBodegaOrigen" style="display:none; margin-top:10px;">
+                        <label>Bodega origen</label>
+                        <select id="bodegaOrigenId"></select>
+                    </div>
+
+                    <div id="rowBodegaDestino" style="margin-top:10px;">
+                        <label>Bodega destino</label>
+                        <select id="bodegaDestinoId"></select>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <label>Detalles (productos)</label>
+                        <div id="detallesRows">
+                        </div>
+                        <div style="margin-top:8px;">
+                            <button class="boton" id="btnAgregarDetalle">Agregar producto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modalActions" style="margin-top:14px;">
+                    <button class="boton" id="btnCancelarCrear">Cancelar</button>
+                    <button class="boton botonPrimario" id="btnSubmitCrear">Crear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
