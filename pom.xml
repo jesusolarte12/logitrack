@@ -11,6 +11,7 @@
 	<groupId>com.proyecto</groupId>
 	<artifactId>logitrack</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>logitrack</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -111,6 +112,13 @@
 		<artifactId>jjwt-jackson</artifactId>
 		<version>0.11.5</version>
 		<scope>runtime</scope>
+		</dependency>
+
+		<!-- Tomcat dependencias -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
