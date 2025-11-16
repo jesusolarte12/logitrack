@@ -67,6 +67,32 @@ public class InventarioServiceImpl implements InventarioService {
             throw new RuntimeException("Producto no encontrado con id: " + productoId);
         }
 
+        // Validar capacidad de la bodega
+        Bodega bodegaCompleta = bodegaRepository.findById(bodegaId)
+                .orElseThrow(() -> new RuntimeException("Bodega no encontrada"));
+        
+        // Calcular stock actual de la bodega
+        List<Inventario> inventariosBodega = inventarioRepository.findByBodegaId(bodegaId);
+        int stockActual = inventariosBodega.stream()
+                .mapToInt(Inventario::getStock)
+                .sum();
+        
+        // Obtener el stock a agregar
+        int stockAgregar = inventario.getStock() == null ? 0 : inventario.getStock();
+        
+        // Validar que no supere la capacidad
+        if (bodegaCompleta.getCapacidad() != null && bodegaCompleta.getCapacidad() > 0) {
+            int stockTotal = stockActual + stockAgregar;
+            if (stockTotal > bodegaCompleta.getCapacidad()) {
+                int espacioDisponible = bodegaCompleta.getCapacidad() - stockActual;
+                throw new RuntimeException(
+                    String.format("Capacidad excedida. La bodega tiene capacidad para %d unidades. " +
+                                "Actualmente tiene %d unidades. Espacio disponible: %d unidades.",
+                                bodegaCompleta.getCapacidad(), stockActual, espacioDisponible)
+                );
+            }
+        }
+
         // Crear referencias ligeras en lugar de cargar las entidades (solo id)
         Bodega bodega = new Bodega();
         bodega.setId(bodegaId);
@@ -123,6 +149,31 @@ public class InventarioServiceImpl implements InventarioService {
         }
 
         if (inventario.getStock() != null) {
+            // Validar capacidad de la bodega al actualizar stock
+            Integer bodegaId = existing.getBodega().getId();
+            Bodega bodegaCompleta = bodegaRepository.findById(bodegaId)
+                    .orElseThrow(() -> new RuntimeException("Bodega no encontrada"));
+            
+            if (bodegaCompleta.getCapacidad() != null && bodegaCompleta.getCapacidad() > 0) {
+                // Calcular stock actual de la bodega sin incluir este inventario
+                List<Inventario> inventariosBodega = inventarioRepository.findByBodegaId(bodegaId);
+                int stockActual = inventariosBodega.stream()
+                        .filter(inv -> !inv.getId().equals(existing.getId()))
+                        .mapToInt(Inventario::getStock)
+                        .sum();
+                
+                int nuevoStockTotal = stockActual + inventario.getStock();
+                
+                if (nuevoStockTotal > bodegaCompleta.getCapacidad()) {
+                    int espacioDisponible = bodegaCompleta.getCapacidad() - stockActual;
+                    throw new RuntimeException(
+                        String.format("Capacidad excedida. La bodega tiene capacidad para %d unidades. " +
+                                    "Stock actual en otros productos: %d unidades. Espacio disponible: %d unidades.",
+                                    bodegaCompleta.getCapacidad(), stockActual, espacioDisponible)
+                    );
+                }
+            }
+            
             existing.setStock(inventario.getStock());
         }
 
