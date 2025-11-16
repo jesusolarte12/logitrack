@@ -1,0 +1,245 @@
+.seccionMovimientos {
+    padding: 45px 50px;
+    max-width: 1600px;
+    margin: 0 auto;
+    overflow-x: hidden;
+}
+
+.encabezadoSeccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+}
+
+.grupoTitulo h1 {
+    font-size: 32px;
+    margin-bottom: 6px;
+}
+
+.subtituloSeccion {
+    font-size: 14px;
+    color: #a1a1aa;
+}
+
+.filtroFechas {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+}
+
+.inputFecha {
+    display: flex;
+    flex-direction: column;
+    min-width: 170px;
+}
+
+.inputFecha input {
+    margin-bottom: 0;
+}
+
+.botonPrimario {
+    height: 48px;
+    white-space: nowrap;
+}
+
+.contenedorTabla {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 25px;
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-x: hidden;
+}
+
+.encabezadoTabla {
+    margin-bottom: 15px;
+}
+
+.tituloTabla {
+    font-size: 20px;
+}
+
+.tablaWrapper {
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+.tablaMovimientos {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.tablaMovimientos thead th {
+    padding: 14px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tablaMovimientos tbody tr {
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.3s ease;
+}
+
+.tablaMovimientos tbody tr:hover {
+    background: rgba(79, 70, 229, 0.08);
+    transform: translateX(4px);
+}
+
+.tablaMovimientos tbody td {
+    padding: 18px;
+    color: #d1d5db;
+    font-size: 13px;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-weight: bold;
+}
+
+.tablaMovimientos tbody tr td:first-child {
+    border-left: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 10px 0 0 10px;
+}
+
+.tablaMovimientos tbody tr td:last-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 0 10px 10px 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.entrada {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.badge.salida {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.badge.transferencia {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.cargando {
+    text-align: center;
+    padding: 25px;
+    font-size: 15px;
+    color: #a1a1aa;
+}
+
+@media (max-width: 768px) {
+    .encabezadoSeccion {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .grupoTitulo {
+        margin-bottom: 15px;
+    }
+
+    .accionesSeccion {
+        order: 2;
+        width: 100%;
+    }
+
+    .filtroFechas {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .inputFecha {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .botonPrimario {
+        width: 100%;
+        height: 45px;
+    }
+
+    .tablaWrapper {
+        overflow-x: auto;
+    }
+
+    .tablaMovimientos {
+        border-spacing: 0 8px;
+        /* opcional: que desaparezca el espacio extra horizontal */
+    }
+
+    .tablaMovimientos thead {
+        display: none;
+        /* ocultas los headers para dar más espacio */
+    }
+
+    .tablaMovimientos tbody tr {
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .tablaMovimientos tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: none;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* usando :before para simular los encabezados */
+    .tablaMovimientos tbody td:nth-child(1)::before {
+        content: "Folio";
+    }
+
+    .tablaMovimientos tbody td:nth-child(2)::before {
+        content: "Fecha/Hora";
+    }
+
+    .tablaMovimientos tbody td:nth-child(3)::before {
+        content: "Tipo";
+    }
+
+    .tablaMovimientos tbody td:nth-child(4)::before {
+        content: "Producto";
+    }
+
+    .tablaMovimientos tbody td:nth-child(5)::before {
+        content: "Cantidad";
+    }
+
+    .tablaMovimientos tbody td:nth-child(6)::before {
+        content: "Origen";
+    }
+
+    .tablaMovimientos tbody td:nth-child(7)::before {
+        content: "Destino";
+    }
+
+    .tablaMovimientos tbody td:nth-child(8)::before {
+        content: "Responsable";
+    }
+
+    .tablaMovimientos tbody td::before {
+        font-weight: 700;
+        color: #6b7280;
+        margin-right: 8px;
+    }
+}
