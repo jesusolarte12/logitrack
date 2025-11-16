@@ -3,10 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Inventario</title>
     <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/inventario.css">
 </head>
 <body>
-    
+    <div class="app-container" id="appContainer">
+        <div class="container">
+            <section class="section" id="inventario">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h1>Control de Inventario</h1>
+                        <p class="section-subtitle" id="subtitulo">Catálogo completo de productos y existencias</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" id="btnAgregarProducto" style="display: none;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Agregar Producto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="selectBodega">Filtrar por Bodega:</label>
+                        <select id="selectBodega" class="select-bodega">
+                            <option value="">Todas las Bodegas</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <label for="buscarProducto">Buscar Producto:</label>
+                        <input type="text" id="buscarProducto" class="search-input" placeholder="Buscar producto...">
+                        <button class="btn btn-secondary" id="btnBuscar">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="product-list" id="productList">
+                    <!-- Los productos se cargarán dinámicamente aquí -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="/js/inventario.js"></script>
 </body>
 </html>
