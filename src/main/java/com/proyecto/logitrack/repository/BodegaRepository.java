@@ -39,5 +39,8 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
         + "FROM Bodega b "
         + "WHERE b.encargado.username = :username")
     List<BodegaDashboardDTO> findBodegaDashboardByEncargado(@Param("username") String username);
+    
+    // Buscar bodegas por ID del encargado
+    List<Bodega> findByEncargado_Id(Integer encargadoId);
 
 }

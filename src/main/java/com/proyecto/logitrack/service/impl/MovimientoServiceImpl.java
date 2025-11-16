@@ -175,6 +175,39 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<MovimientoDTO> listarMovimientosPorUsuario(String username) {
+        // Buscar el usuario por username
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + username));
+        
+        // Si es ADMIN, devolver todos los movimientos
+        if (usuario.getRol().name().equals("ADMIN")) {
+            return listarMovimientos();
+        }
+        
+        // Si es EMPLEADO, buscar las bodegas donde es encargado
+        List<Bodega> bodegasEncargadas = bodegaRepository.findByEncargado_Id(usuario.getId());
+        
+        if (bodegasEncargadas.isEmpty()) {
+            // Si no tiene bodegas asignadas, no devolver movimientos
+            return List.of();
+        }
+        
+        // Filtrar movimientos donde la bodega origen o destino sea una de las bodegas del empleado
+        List<Movimiento> movimientos = bodegasEncargadas.stream()
+                .flatMap(bodega -> movimientoRepository
+                        .findByBodegaOrigen_IdOrBodegaDestino_Id(bodega.getId(), bodega.getId())
+                        .stream())
+                .distinct()
+                .collect(Collectors.toList());
+        
+        return movimientos.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional

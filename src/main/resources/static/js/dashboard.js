@@ -43,9 +43,15 @@ async function cargarInfoUsuario() {
 
         const usuario = await response.json();
 
+        // Desktop
         document.getElementById("username").textContent = capitalizar(usuario.nombre);
         document.getElementById("username-rol").textContent = capitalizar(usuario.rol);
         document.getElementById("iniciales").textContent = obtenerIniciales(usuario.nombre);
+
+        // Mobile
+        document.getElementById("username-mobile").textContent = capitalizar(usuario.nombre);
+        document.getElementById("username-rol-mobile").textContent = capitalizar(usuario.rol);
+        document.getElementById("iniciales-mobile").textContent = obtenerIniciales(usuario.nombre);
 
         // Mostrar opción de Usuarios solo para ADMIN
         if (usuario.rol === "ADMIN") {
@@ -85,7 +91,18 @@ validarToken();
 document.addEventListener("DOMContentLoaded", () => {
     const navItems = document.querySelectorAll(".nav-item");
     const iframes = document.querySelectorAll(".section");
+    const hamburger = document.getElementById("hamburger");
+    const navMenu = document.getElementById("navMenu");
 
+    // Toggle menú hamburguesa
+    if (hamburger) {
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navMenu.classList.toggle("active");
+        });
+    }
+
+    // Cerrar menú al hacer click en una opción (solo en móvil)
     navItems.forEach(item => {
         item.addEventListener("click", () => {
             // Cambiar activo en el navbar
@@ -97,7 +114,26 @@ document.addEventListener("DOMContentLoaded", () => {
             iframes.forEach(frame => {
                 frame.style.display = frame.id === target ? "block" : "none";
             });
+
+            // Cerrar menú en móvil
+            if (window.innerWidth <= 768) {
+                hamburger.classList.remove("active");
+                navMenu.classList.remove("active");
+            }
         });
+    });
+
+    // Cerrar menú al hacer click fuera de él
+    document.addEventListener("click", (e) => {
+        if (window.innerWidth <= 768) {
+            const isClickInsideMenu = navMenu.contains(e.target);
+            const isClickOnHamburger = hamburger.contains(e.target);
+            
+            if (!isClickInsideMenu && !isClickOnHamburger && navMenu.classList.contains("active")) {
+                hamburger.classList.remove("active");
+                navMenu.classList.remove("active");
+            }
+        }
     });
 
     // Cargar información del usuario
