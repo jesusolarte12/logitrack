@@ -8,6 +8,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     await obtenerInfoUsuario();
     await cargarBodegas();
     inicializarEventos();
+    
+    // Escuchar mensajes desde el dashboard principal
+    window.addEventListener('message', async function(event) {
+        if (event.data && event.data.type === 'recargarDatos') {
+            console.log('Recargando datos de bodegas desde mensaje del dashboard');
+            await cargarBodegas();
+        }
+    });
 });
 
 // ===== UTILIDADES =====
@@ -306,6 +314,12 @@ async function guardarBodega(event) {
 
         cerrarModal();
         await cargarBodegas();
+        
+        // Notificar al dashboard principal para actualizar sus datos
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'actualizarBodegas' }, '*');
+        }
+        
         Utils.mostrarMensaje(`Bodega ${isUpdate ? 'actualizada' : 'creada'} exitosamente`);
     } catch (error) {
         console.error("Error al guardar bodega:", error);
@@ -402,6 +416,12 @@ async function eliminarBodega() {
         
         cerrarModalConfirmacion();
         await cargarBodegas();
+        
+        // Notificar al dashboard principal para actualizar sus datos
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'actualizarBodegas' }, '*');
+        }
+        
         Utils.mostrarMensaje(`Bodega "${nombreBodega}" eliminada exitosamente`);
     } catch (error) {
         console.error("Error al eliminar bodega:", error);

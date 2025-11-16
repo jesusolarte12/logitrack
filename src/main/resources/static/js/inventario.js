@@ -9,6 +9,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await cargarBodegas();
     await cargarInventario();
     inicializarEventos();
+    
+    // Escuchar mensajes desde el dashboard principal
+    window.addEventListener('message', async function(event) {
+        if (event.data && event.data.type === 'recargarDatos') {
+            console.log('Recargando datos de inventario desde mensaje del dashboard');
+            await cargarBodegas();
+            await cargarInventario();
+        }
+    });
 });
 
 // ===== UTILIDADES =====
@@ -500,7 +509,14 @@ async function crearNuevoProducto(event) {
         }
 
         cerrarModalNuevo();
+        await cargarBodegas(); // Actualizar datos de bodegas locales
         await cargarInventario();
+        
+        // Notificar al dashboard principal para actualizar sus datos
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'actualizarBodegas' }, '*');
+        }
+        
         Utils.mostrarMensaje("Producto creado y agregado al inventario exitosamente");
     } catch (error) {
         console.error("Error al crear producto:", error);
@@ -681,11 +697,18 @@ async function actualizarInventario(event) {
 
         if (!responseInventario.ok) {
             const errorText = await responseInventario.text();
-            throw new Error(errorText || "Error al actualizar el inventario");
+            throw new Error(errorText || "La cantidad de stock tiene que ser un número válido, verifica la cantidad.");
         }
 
         cerrarModalEditar();
+        await cargarBodegas(); // Actualizar datos de bodegas locales
         await cargarInventario();
+        
+        // Notificar al dashboard principal para actualizar sus datos
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'actualizarBodegas' }, '*');
+        }
+        
         Utils.mostrarMensaje("Producto e inventario actualizados exitosamente");
     } catch (error) {
         console.error("Error al actualizar:", error);
@@ -754,7 +777,14 @@ async function eliminarInventario() {
         }
 
         cerrarModalConfirmacion();
+        await cargarBodegas(); // Actualizar datos de bodegas locales
         await cargarInventario();
+        
+        // Notificar al dashboard principal para actualizar sus datos
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'actualizarBodegas' }, '*');
+        }
+        
         Utils.mostrarMensaje("Producto eliminado del inventario exitosamente");
     } catch (error) {
         console.error("Error al eliminar:", error);
