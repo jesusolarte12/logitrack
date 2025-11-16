@@ -23,7 +23,7 @@ public interface InventarioRepository extends JpaRepository<Inventario, Integer>
 
     // Obtener detalle de inventario por nombre de bodega
     @Query("SELECT new com.proyecto.logitrack.dto.InventarioDetalleDTO(" +
-           "b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
+           "i.id, p.id, b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
            "FROM Inventario i " +
            "JOIN i.producto p " +
            "JOIN i.bodega b " +
@@ -33,7 +33,7 @@ public interface InventarioRepository extends JpaRepository<Inventario, Integer>
 
     // Obtener todo el inventario detallado (todas las bodegas)
     @Query("SELECT new com.proyecto.logitrack.dto.InventarioDetalleDTO(" +
-           "b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
+           "i.id, p.id, b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
            "FROM Inventario i " +
            "JOIN i.producto p " +
            "JOIN i.bodega b " +
@@ -42,7 +42,7 @@ public interface InventarioRepository extends JpaRepository<Inventario, Integer>
 
     // Obtener inventario detallado solo de las bodegas del empleado (por username)
     @Query("SELECT new com.proyecto.logitrack.dto.InventarioDetalleDTO(" +
-           "b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
+           "i.id, p.id, b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
            "FROM Inventario i " +
            "JOIN i.producto p " +
            "JOIN i.bodega b " +

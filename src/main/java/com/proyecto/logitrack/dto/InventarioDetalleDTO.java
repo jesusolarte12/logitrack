@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventarioDetalleDTO {
+    private Integer inventarioId;
+    private Integer productoId;
     private String nombreBodega;
     private String nombreProducto;
     private Double precioVenta;
