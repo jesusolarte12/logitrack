@@ -39,4 +39,14 @@ public interface InventarioRepository extends JpaRepository<Inventario, Integer>
            "JOIN i.bodega b " +
            "JOIN p.categoria c")
     List<InventarioDetalleDTO> findAllInventarioDetalle();
+
+    // Obtener inventario detallado solo de las bodegas del empleado (por username)
+    @Query("SELECT new com.proyecto.logitrack.dto.InventarioDetalleDTO(" +
+           "b.nombre, p.nombre, p.precioVenta, p.precioCompra, c.nombre, i.stock) " +
+           "FROM Inventario i " +
+           "JOIN i.producto p " +
+           "JOIN i.bodega b " +
+           "JOIN p.categoria c " +
+           "WHERE b.encargado.username = :username")
+    List<InventarioDetalleDTO> findInventarioDetalleByEncargado(@Param("username") String username);
 }

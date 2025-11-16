@@ -175,4 +175,9 @@ public class InventarioServiceImpl implements InventarioService {
     public List<InventarioDetalleDTO> getAllInventarioDetalle() {
         return inventarioRepository.findAllInventarioDetalle();
     }
+
+    @Override
+    public List<InventarioDetalleDTO> getInventarioDetalleByEncargado(String username) {
+        return inventarioRepository.findInventarioDetalleByEncargado(username);
+    }
 }

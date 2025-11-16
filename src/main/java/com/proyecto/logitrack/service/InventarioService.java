@@ -36,4 +36,7 @@ public interface InventarioService {
 
     // Obtener todo el inventario detallado
     List<InventarioDetalleDTO> getAllInventarioDetalle();
+
+    // Obtener inventario detallado por username del encargado
+    List<InventarioDetalleDTO> getInventarioDetalleByEncargado(String username);
 }
