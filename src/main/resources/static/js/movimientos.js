@@ -78,10 +78,23 @@ const cargarProductosBodega = async (bodegaId) => {
         }
         
         const inventario = await res.json();
-        if (inventario) {
+        console.log('Inventario recibido:', inventario); // Debug
+        
+        if (inventario && inventario.length > 0) {
+            // El backend devuelve producto_id (JSON) que se convierte a productoId en JS
             state.productosDisponibles = state.productos.filter(p => 
-                inventario.some(inv => inv.productoId === p.id && inv.cantidad > 0)
+                inventario.some(inv => {
+                    // Probar ambas propiedades por si acaso
+                    const invProductoId = inv.producto_id || inv.productoId;
+                    const invStock = inv.stock || inv.cantidad || 0;
+                    return invProductoId === p.id && invStock > 0;
+                })
             );
+            console.log('Productos disponibles:', state.productosDisponibles); // Debug
+            actualizarSelectsProductos();
+        } else {
+            console.warn('No hay productos en el inventario de esta bodega');
+            state.productosDisponibles = [];
             actualizarSelectsProductos();
         }
     } catch (e) {
