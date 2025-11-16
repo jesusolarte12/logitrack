@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.getElementById("hamburger");
     const navMenu = document.getElementById("navMenu");
 
+    // Mostrar sección de bodegas por defecto
     // Toggle menú hamburguesa
     if (hamburger) {
         hamburger.addEventListener("click", () => {
