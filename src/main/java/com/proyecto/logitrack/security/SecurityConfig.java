@@ -57,7 +57,7 @@ public class SecurityConfig {
         .requestMatchers("/api/bodega/info").permitAll()
 
         //Permitir endpoint de inventario detalle desde cualquier lugar TEST
-        .requestMatchers("/api/inventario/detalle/**").permitAll()
+        .requestMatchers("/api/inventario/detalle/**").authenticated()
 
         // API protegida
         .requestMatchers("/api/**").authenticated()
