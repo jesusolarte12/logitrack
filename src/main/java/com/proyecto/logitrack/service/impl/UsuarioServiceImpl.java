@@ -3,6 +3,7 @@ package com.proyecto.logitrack.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.logitrack.dto.UsuarioDTO;
@@ -15,6 +16,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Servicio que maneja operaciones relacionadas con la entidad Usuario.
@@ -51,7 +55,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Crea una nueva entidad Usuario a partir del DTO recibido y la persiste
         Usuario usuario = new Usuario();
         usuario.setUsername(usuarioDTO.getUsername());
-        usuario.setPassword(usuarioDTO.getPassword());
+        usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword())); // Encriptar contraseña
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setCargo(usuarioDTO.getCargo());
         usuario.setDocumento(usuarioDTO.getDocumento());
@@ -93,11 +97,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.findByDocumento(documento)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado con documento: " + documento));
 
+        // Encriptar la contraseña si viene en los datos actualizados
+        String passwordEncriptada = datosActualizados.getPassword() != null && !datosActualizados.getPassword().isEmpty()
+            ? passwordEncoder.encode(datosActualizados.getPassword())
+            : null;
+
         // Llamada al repository para actualizar campos permitidos
         usuarioRepository.actualizarUsuarioParcial(
             documento,
             datosActualizados.getUsername(),
-            datosActualizados.getPassword(),
+            passwordEncriptada,
             datosActualizados.getNombre(),
             datosActualizados.getCargo(),
             datosActualizados.getEmail(),
