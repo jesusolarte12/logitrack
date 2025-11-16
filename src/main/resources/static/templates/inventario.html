@@ -3,10 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Inventario</title>
     <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/inventario.css">
+    <link rel="stylesheet" href="../css/bodegas.css">
 </head>
 <body>
-    
+    <div class="app-container" id="appContainer">
+        <div class="container">
+            <section class="section" id="inventario">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h1>Control de Inventario</h1>
+                        <p class="section-subtitle" id="subtitulo">Catálogo completo de productos y existencias</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" id="btnAgregarProducto" style="display: none;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Agregar Producto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="selectBodega">Filtrar por Bodega:</label>
+                        <select id="selectBodega" class="select-bodega">
+                            <option value="">Todas las Bodegas</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <label for="buscarProducto">Buscar Producto:</label>
+                        <input type="text" id="buscarProducto" class="search-input" placeholder="Buscar producto...">
+                        <button class="btn btn-secondary" id="btnBuscar">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="product-list" id="productList">
+                    <!-- Los productos se cargarán dinámicamente aquí -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal para agregar producto nuevo -->
+    <div id="modalNuevoProducto" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Nuevo Producto</h2>
+                <button class="modal-close" id="btnCerrarModal">&times;</button>
+            </div>
+            <form id="formNuevoProducto">
+                <div class="form-group">
+                    <label for="nombreProducto">Nombre del Producto *</label>
+                    <input type="text" id="nombreProducto" maxlength="80" required
+                           placeholder="Ej: Laptop HP 15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoriaProducto">Categoría *</label>
+                    <select id="categoriaProducto" required>
+                        <option value="">Seleccione una categoría...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="precioCompraProducto">Precio de Compra *</label>
+                    <input type="number" id="precioCompraProducto" min="0" step="0.01" required
+                           placeholder="Ej: 1500000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="precioVentaProducto">Precio de Venta *</label>
+                    <input type="number" id="precioVentaProducto" min="0" step="0.01" required
+                           placeholder="Ej: 2000000">
+                </div>
+
+                <div class="form-group">
+                    <label for="bodegaProducto">Bodega *</label>
+                    <select id="bodegaProducto" required>
+                        <option value="">Seleccione una bodega...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stockProducto">Cantidad Inicial (Stock) *</label>
+                    <input type="number" id="stockProducto" required min="0" 
+                           placeholder="Ej: 100">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar inventario -->
+    <div id="modalEditarInventario" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Producto en Inventario</h2>
+                <button class="modal-close" id="btnCerrarModalEditar">&times;</button>
+            </div>
+            <form id="formEditarInventario">
+                <input type="hidden" id="inventarioId">
+                <input type="hidden" id="productoId">
+                
+                <div class="form-group">
+                    <label for="nombreProductoEditar">Nombre del Producto *</label>
+                    <input type="text" id="nombreProductoEditar" maxlength="80" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoriaProductoEditar">Categoría *</label>
+                    <select id="categoriaProductoEditar" required>
+                        <option value="">Seleccione una categoría...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="precioCompraEditar">Precio de Compra *</label>
+                    <input type="number" id="precioCompraEditar" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="precioVentaEditar">Precio de Venta *</label>
+                    <input type="number" id="precioVentaEditar" min="0" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bodegaEditar">Bodega *</label>
+                    <select id="bodegaEditar" required>
+                        <option value="">Seleccione una bodega...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stockEditar">Cantidad (Stock) *</label>
+                    <input type="number" id="stockEditar" required min="0">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelarEditar">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div id="modalConfirmarEliminar" class="modal" style="display: none;">
+        <div class="modal-content modal-confirm">
+            <div class="modal-header">
+                <h2>Confirmar Eliminación</h2>
+                <button class="modal-close" id="btnCerrarConfirmar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="mensajeConfirmacion"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelarEliminar">No</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/inventario.js"></script>
 </body>
 </html>

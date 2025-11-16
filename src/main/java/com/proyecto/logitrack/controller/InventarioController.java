@@ -15,28 +15,45 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.logitrack.dto.InventarioDTO;
+import com.proyecto.logitrack.dto.InventarioDetalleDTO;
 import com.proyecto.logitrack.entities.Bodega;
 import com.proyecto.logitrack.entities.Inventario;
 import com.proyecto.logitrack.entities.Producto;
+import com.proyecto.logitrack.entities.Usuario;
+import com.proyecto.logitrack.enums.UsuarioRolEnum;
 import com.proyecto.logitrack.repository.BodegaRepository;
 import com.proyecto.logitrack.repository.ProductoRepository;
+import com.proyecto.logitrack.repository.UsuarioRepository;
 import com.proyecto.logitrack.service.InventarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.proyecto.logitrack.service.AuditoriaService;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api/inventario")
 public class InventarioController {
 
     private final InventarioService inventarioService;
     private final BodegaRepository bodegaRepository;
     private final ProductoRepository productoRepository;
+    private final UsuarioRepository usuarioRepository;
     @Autowired
     private AuditoriaService auditoriaService;
+
+    public InventarioController(InventarioService inventarioService,
+                                BodegaRepository bodegaRepository,
+                                ProductoRepository productoRepository,
+                                UsuarioRepository usuarioRepository,
+                                AuditoriaService auditoriaService) {
+        this.inventarioService = inventarioService;
+        this.bodegaRepository = bodegaRepository;
+        this.productoRepository = productoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.auditoriaService = auditoriaService;
+    }
 
     // Listar todos los inventarios (devuelve DTOs para evitar problemas de serialización)
     @GetMapping("/listar")
@@ -147,6 +164,38 @@ public class InventarioController {
         List<Inventario> lista = inventarioService.findByProducto(productoId);
         List<InventarioDTO> dtos = lista.stream().map(this::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
+    }
+
+    // Obtener inventario detallado por nombre de bodega
+    @GetMapping("/detalle/bodega/{nombreBodega}")
+    public ResponseEntity<List<InventarioDetalleDTO>> getInventarioDetallePorBodega(@PathVariable String nombreBodega) {
+        List<InventarioDetalleDTO> detalle = inventarioService.getInventarioDetalleByBodegaNombre(nombreBodega);
+        return ResponseEntity.ok(detalle);
+    }
+
+    // Obtener inventario detallado con filtrado por rol (ADMIN ve todo, EMPLEADO solo sus bodegas)
+    @GetMapping("/detalle")
+    public ResponseEntity<List<InventarioDetalleDTO>> getAllInventarioDetalle() {
+        // Obtener usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        
+        // Buscar usuario para obtener su rol
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        List<InventarioDetalleDTO> detalle;
+        
+        // Filtrar según el rol
+        if (usuario.getRol() == UsuarioRolEnum.ADMIN) {
+            // ADMIN ve todo el inventario
+            detalle = inventarioService.getAllInventarioDetalle();
+        } else {
+            // EMPLEADO solo ve el inventario de sus bodegas
+            detalle = inventarioService.getInventarioDetalleByEncargado(username);
+        }
+        
+        return ResponseEntity.ok(detalle);
     }
 
     // Helper: mapear entidad a DTO
