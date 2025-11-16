@@ -50,7 +50,6 @@ public class MovimientoServiceImpl implements MovimientoService {
                     .orElseThrow(() -> new EntityNotFoundException("Bodega destino no encontrada"))
                 : null;
 
-        // Convertir el tipoMovimiento String a Enum
         TipoMovimiento tipo;
         try {
             tipo = TipoMovimiento.valueOf(dto.getTipoMovimiento().toUpperCase());
@@ -64,7 +63,6 @@ public class MovimientoServiceImpl implements MovimientoService {
         movimiento.setBodegaOrigen(bodegaOrigen);
         movimiento.setBodegaDestino(bodegaDestino);
 
-        // Convertir los detalles DTO a entidades
         List<MovimientoDetalle> detalles = dto.getDetalles().stream()
                 .map(detDTO -> {
                     Producto producto = productoRepository.findById(detDTO.getProductoId())
@@ -79,8 +77,6 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .collect(Collectors.toList());
 
         movimiento.setDetalles(detalles);
-
-        // Guardar movimiento + detalles (cascade se encarga del resto)
         movimientoRepository.save(movimiento);
 
         return mapToDTO(movimiento);
@@ -111,26 +107,57 @@ public class MovimientoServiceImpl implements MovimientoService {
         movimientoRepository.deleteById(id);
     }
 
-    // Mapper entidad → DTO
+    // 🔥 Mapper mejorado que trae TODA la info de la DB usando las relaciones JPA
     private MovimientoDTO mapToDTO(Movimiento movimiento) {
         MovimientoDTO dto = new MovimientoDTO();
+        
+        // Información básica
         dto.setId(movimiento.getId());
         dto.setFecha(movimiento.getFecha());
         dto.setTipoMovimiento(movimiento.getTipoMovimiento().name());
+        
+        // IDs de las relaciones
         dto.setUsuarioId(movimiento.getUsuario().getId());
         dto.setBodegaOrigenId(movimiento.getBodegaOrigen() != null ? movimiento.getBodegaOrigen().getId() : null);
         dto.setBodegaDestinoId(movimiento.getBodegaDestino() != null ? movimiento.getBodegaDestino().getId() : null);
 
-        List<DetalleMovimientoDTO> detallesDTO = (movimiento.getDetalles() != null)
+        // 🆕 Nombres de las relaciones (traídos directamente de la DB por JPA)
+        dto.setResponsable(movimiento.getUsuario().getNombre());
+        dto.setBodegaOrigen(movimiento.getBodegaOrigen() != null ? movimiento.getBodegaOrigen().getNombre() : null);
+        dto.setBodegaDestino(movimiento.getBodegaDestino() != null ? movimiento.getBodegaDestino().getNombre() : null);
+
+        // Mapear detalles con información completa
+        List<DetalleMovimientoDTO> detallesDTO = (movimiento.getDetalles() != null && !movimiento.getDetalles().isEmpty())
                 ? movimiento.getDetalles().stream()
-                    .map(d -> new DetalleMovimientoDTO(
-                            d.getProducto().getId(),
-                            d.getCantidad()
-                    ))
+                    .map(detalle -> {
+                        DetalleMovimientoDTO detalleDTO = new DetalleMovimientoDTO();
+                        detalleDTO.setProductoId(detalle.getProducto().getId());
+                        detalleDTO.setCantidad(detalle.getCantidad());
+                        // 🆕 Traer nombres del producto y categoría
+                        detalleDTO.setNombreProducto(detalle.getProducto().getNombre());
+                        detalleDTO.setCategoriaProducto(detalle.getProducto().getCategoria().getNombre());
+                        return detalleDTO;
+                    })
                     .collect(Collectors.toList())
                 : List.of();
 
         dto.setDetalles(detallesDTO);
+        
+        // 🆕 Información resumida para la tabla
+        if (!detallesDTO.isEmpty()) {
+            DetalleMovimientoDTO primerDetalle = detallesDTO.get(0);
+            
+            if (detallesDTO.size() == 1) {
+                // Un solo producto
+                dto.setProducto(primerDetalle.getNombreProducto());
+                dto.setCantidad(primerDetalle.getCantidad());
+            } else {
+                // Múltiples productos
+                dto.setProducto(primerDetalle.getNombreProducto() + " (+" + (detallesDTO.size() - 1) + " más)");
+                dto.setCantidad(detallesDTO.stream().mapToInt(DetalleMovimientoDTO::getCantidad).sum());
+            }
+        }
+        
         return dto;
     }
 }

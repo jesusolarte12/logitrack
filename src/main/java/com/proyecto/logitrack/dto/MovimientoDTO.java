@@ -18,7 +18,6 @@ import lombok.ToString;
 public class MovimientoDTO {
 
     private Integer id;
-
     private LocalDateTime fecha;
 
     @NotNull(message = "El tipo de movimiento es obligatorio")
@@ -36,6 +35,13 @@ public class MovimientoDTO {
     @NotEmpty(message = "Debe incluir al menos un producto en el movimiento")
     private List<DetalleMovimientoDTO> detalles;
 
+    // 🆕 Campos adicionales para mostrar en el frontend (solo lectura)
+    private String responsable;      // Nombre del usuario
+    private String bodegaOrigen;     // Nombre de la bodega origen
+    private String bodegaDestino;    // Nombre de la bodega destino
+    private String producto;         // Nombre del producto (primer producto o resumen)
+    private Integer cantidad;        // Cantidad total
+
     // Subclase interna para los productos del movimiento
     @Data
     @NoArgsConstructor
@@ -47,5 +53,9 @@ public class MovimientoDTO {
 
         @Positive(message = "La cantidad debe ser mayor que cero")
         private Integer cantidad;
+        
+        // 🆕 Campos adicionales para el frontend (solo lectura)
+        private String nombreProducto;
+        private String categoriaProducto;
     }
 }

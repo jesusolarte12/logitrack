@@ -1,12 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Movimientos - LogiTrack</title>
     <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/movimientos.css">
+    <script src="../js/movimientos.js" defer></script>
 </head>
+
 <body>
-    
+    <div class="seccionMovimientos" id="seccionMovimientos">
+        <div class="encabezadoSeccion">
+            <div class="grupoTitulo">
+                <h1>Registro de Movimientos</h1>
+                <p class="subtituloSeccion">Historial completo de operaciones logísticas</p>
+            </div>
+            <div class="accionesSeccion">
+                <div class="filtroFechas">
+                    <div class="inputFecha">
+                        <label>Fecha inicio</label>
+                        <input type="date" id="fechaInicio" class="inputDate">
+                    </div>
+                    <div class="inputFecha">
+                        <label>Fecha fin</label>
+                        <input type="date" id="fechaFin" class="inputDate">
+                    </div>
+                    <button class="boton botonPrimario" id="btnFiltrar">Filtrar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="contenedorTabla">
+            <div class="encabezadoTabla">
+                <h3 class="tituloTabla">Registro de Actividades</h3>
+            </div>
+            
+            <div class="tablaWrapper">
+                <table class="tablaMovimientos">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha/Hora</th>
+                            <th>Tipo</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaMovimientos">
+                        <tr>
+                            <td colspan="8" class="cargando">
+                                <p>Cargando movimientos...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
