@@ -3,7 +3,10 @@ package com.proyecto.logitrack.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,11 +27,8 @@ import com.proyecto.logitrack.enums.UsuarioRolEnum;
 import com.proyecto.logitrack.repository.BodegaRepository;
 import com.proyecto.logitrack.repository.ProductoRepository;
 import com.proyecto.logitrack.repository.UsuarioRepository;
-import com.proyecto.logitrack.service.InventarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import com.proyecto.logitrack.service.AuditoriaService;
+import com.proyecto.logitrack.service.InventarioService;
 
 import jakarta.validation.Valid;
 
@@ -158,6 +158,16 @@ public class InventarioController {
         return ResponseEntity.ok(dtos);
     }
 
+    // Obtener inventario por bodega
+    @GetMapping("/bodega/{bodegaId}")
+    public ResponseEntity<List<InventarioDTO>> getInventarioPorBodega(@PathVariable Integer bodegaId) {
+        List<Inventario> inventarios = inventarioService.findByBodega(bodegaId);
+        List<InventarioDTO> dtos = inventarios.stream()
+                .filter(inv -> inv.getStock() > 0) // Solo productos con stock
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+}
     // Buscar por producto (devuelve DTOs)
     @GetMapping("/buscar/producto")
     public ResponseEntity<List<InventarioDTO>> buscarPorProducto(@RequestParam Integer productoId) {

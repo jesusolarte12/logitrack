@@ -52,13 +52,7 @@ public class SecurityConfig {
         .requestMatchers("/docs").permitAll()
         .requestMatchers("/v3/api-docs/**").permitAll()
         .requestMatchers("/swagger-ui/**").permitAll()
-
-        // Permitir endpoint de bodega desde cualquier lugar TEST
-        .requestMatchers("/api/bodega/info").permitAll()
-
-        //Permitir endpoint de inventario detalle desde cualquier lugar TEST
-        .requestMatchers("/api/inventario/detalle/**").authenticated()
-
+        
         // API protegida
         .requestMatchers("/api/**").authenticated()
 
