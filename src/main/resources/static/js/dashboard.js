@@ -47,6 +47,14 @@ async function cargarInfoUsuario() {
         document.getElementById("username-rol").textContent = capitalizar(usuario.rol);
         document.getElementById("iniciales").textContent = obtenerIniciales(usuario.nombre);
 
+        // Mostrar opción de Usuarios solo para ADMIN
+        if (usuario.rol === "ADMIN") {
+            const navUsuarios = document.getElementById("nav-usuarios");
+            if (navUsuarios) {
+                navUsuarios.style.display = "block";
+            }
+        }
+
         return usuario;
     } catch (error) {
         console.error(error);
@@ -102,6 +110,26 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "login.html";
         });
     }
+    
+    // Escuchar mensajes desde los iframes para actualizar datos
+    window.addEventListener('message', function(event) {
+        // Verificar que el mensaje es para actualizar bodegas
+        if (event.data && event.data.type === 'actualizarBodegas') {
+            console.log('Recibido mensaje para actualizar bodegas desde iframe');
+            // Recargar el iframe de bodegas si está visible o cargado
+            const iframeBodegas = document.getElementById('bodegas');
+            if (iframeBodegas && iframeBodegas.contentWindow) {
+                // Enviar mensaje al iframe de bodegas para que se recargue
+                iframeBodegas.contentWindow.postMessage({ type: 'recargarDatos' }, '*');
+            }
+            
+            // También recargar inventario si está visible
+            const iframeInventario = document.getElementById('inventario');
+            if (iframeInventario && iframeInventario.contentWindow) {
+                iframeInventario.contentWindow.postMessage({ type: 'recargarDatos' }, '*');
+            }
+        }
+    });
 });
 
 
