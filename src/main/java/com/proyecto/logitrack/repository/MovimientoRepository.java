@@ -19,4 +19,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
 
     // Buscar por id de usuario
     List<Movimiento> findByUsuario_Id(Integer usuarioId);
+    
+    // Buscar movimientos donde la bodega de origen o destino sea la especificada
+    List<Movimiento> findByBodegaOrigen_IdOrBodegaDestino_Id(Integer bodegaOrigenId, Integer bodegaDestinoId);
 }

@@ -11,6 +11,8 @@ public interface MovimientoService {
     MovimientoDTO obtenerPorId(Integer id);
 
     List<MovimientoDTO> listarMovimientos();
+    
+    List<MovimientoDTO> listarMovimientosPorUsuario(String username);
 
     void eliminarMovimiento(Integer id);
 }
