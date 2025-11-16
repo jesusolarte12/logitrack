@@ -192,9 +192,9 @@
 }
 
 .modalBody select,
-.modalBody input[type="number"],
+.modalBody input,
 .modalBody textarea {
-    background: rgba(255, 255, 255, 0.03);
+    background: #0c1220;
     border: 1px solid rgba(255, 255, 255, 0.04);
     color: #e6eef8;
     padding: 10px;

@@ -1,18 +1,21 @@
 const API_URL = 'http://localhost:8080/api/movimientos';
-const state = { movimientos: [], bodegas: [], productos: [], usuarioId: null };
+const state = { 
+    movimientos: [], 
+    bodegas: [], 
+    productos: [], 
+    usuarioId: null,
+    usuarioNombre: null 
+};
 
 // ============= UTILIDADES =============
-const headers = () => ({ "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("jwt_token")}` });
+const headers = () => ({ 
+    "Content-Type": "application/json", 
+    "Authorization": `Bearer ${localStorage.getItem("jwt_token")}` 
+});
+
 const formatFecha = f => f ? new Date(f).toISOString().slice(0, 16).replace('T', ' ') : "N/A";
 const getEl = id => document.getElementById(id);
 const getVal = id => getEl(id)?.value || null;
-
-const decodeJWT = token => {
-    try {
-        const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(decodeURIComponent(atob(payload).split('').map(c => `%${c.charCodeAt(0).toString(16).padStart(2, '0')}`).join('')));
-    } catch { return null; }
-};
 
 const fetchJSON = async (url, options = {}) => {
     const res = await fetch(url, { headers: headers(), ...options });
@@ -22,38 +25,63 @@ const fetchJSON = async (url, options = {}) => {
         setTimeout(() => window.location.href = "/templates/login.html", 1500);
         return null;
     }
-    if (!res.ok) throw new Error(`Error ${res.status}`);
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || `Error ${res.status}`);
+    }
     return res.json();
 };
 
-// ============= CARGAR DATOS =============
-const fetchUsuarioId = async () => {
+// ============= OBTENER USUARIO AUTENTICADO =============
+const fetchUsuarioInfo = async () => {
     try {
         const token = localStorage.getItem('jwt_token');
-        if (!token) return alert("Debes iniciar sesión"), null;
-        const payload = decodeJWT(token);
-        const username = payload?.sub || payload?.username || payload?.user;
-        if (!username) return null;
-        const data = await fetchJSON(`/api/usuario/username/${encodeURIComponent(username)}`);
-        return data?.id || null;
-    } catch { return null; }
+        if (!token) {
+            alert("Debes iniciar sesión");
+            window.location.href = "/templates/login.html";
+            return null;
+        }
+
+        // Llamar al endpoint /auth/userinfo para obtener la información completa
+        const data = await fetchJSON('http://localhost:8080/auth/userinfo');
+        
+        if (data && data.id) {
+            state.usuarioId = data.id;
+            state.usuarioNombre = data.nombre;
+            console.log("Usuario autenticado:", state.usuarioNombre, "ID:", state.usuarioId);
+            return data;
+        } else {
+            throw new Error("No se pudo obtener la información del usuario");
+        }
+    } catch (error) {
+        console.error("Error al obtener usuario:", error);
+        alert("Error al obtener información del usuario: " + error.message);
+        return null;
+    }
 };
 
+// ============= CARGAR DATOS =============
 const cargarDatos = async () => {
     try {
         [state.bodegas, state.productos] = await Promise.all([
-            fetchJSON('/api/bodega/listar').catch(() => []),
-            fetchJSON('/api/producto/listar').catch(() => [])
+            fetchJSON('http://localhost:8080/api/bodega/listar').catch(() => []),
+            fetchJSON('http://localhost:8080/api/producto/listar').catch(() => [])
         ]);
         poblarSelects();
-    } catch (e) { console.error("Error:", e); }
+        console.log("Datos cargados:", state.bodegas.length, "bodegas,", state.productos.length, "productos");
+    } catch (e) { 
+        console.error("Error al cargar datos:", e); 
+    }
 };
 
 const crearOpts = (items, fn) => items.map(i => `<option value="${i.id}">${fn(i)}</option>`).join('');
 
 const poblarSelects = () => {
     const opts = '<option value="">-- Seleccionar bodega --</option>' + crearOpts(state.bodegas, b => b.nombre || `Bodega ${b.id}`);
-    ['bodegaOrigenId', 'bodegaDestinoId'].forEach(id => { const s = getEl(id); if (s) s.innerHTML = opts; });
+    ['bodegaOrigenId', 'bodegaDestinoId'].forEach(id => { 
+        const s = getEl(id); 
+        if (s) s.innerHTML = opts; 
+    });
 };
 
 // ============= DETALLES =============
@@ -62,21 +90,28 @@ const crearFila = i => {
     row.className = 'detalle-row';
     row.style.cssText = 'display:flex;gap:10px;margin-bottom:10px;align-items:center';
     row.innerHTML = `
-        <select class="detalle-producto" style="flex:2;padding:8px;border:1px solid #cbd5e0;border-radius:6px">
+        <select class="detalle-producto" style="flex:2;padding:8px;border:1px solid #cbd5e0;border-radius:6px" required>
             <option value="">-- Producto --</option>${crearOpts(state.productos, p => p.nombre || `Producto ${p.id}`)}
         </select>
-        <input type="number" min="1" value="1" class="detalle-cantidad" style="flex:1;padding:8px;border:1px solid #cbd5e0;border-radius:6px">
+        <input type="number" min="1" value="1" class="detalle-cantidad" style="flex:1;padding:8px;border:1px solid #cbd5e0;border-radius:6px" required>
         <button type="button" class="detalle-remove boton" style="padding:8px 12px;background:#e53e3e;color:white;border:none;border-radius:6px;cursor:pointer">Eliminar</button>
     `;
     row.querySelector('.detalle-remove').onclick = () => row.remove();
     return row;
 };
 
-const agregarFila = () => { const c = getEl('detallesRows'); if (c) c.appendChild(crearFila(c.children.length)); };
+const agregarFila = () => { 
+    const c = getEl('detallesRows'); 
+    if (c) c.appendChild(crearFila(c.children.length)); 
+};
 
 const ajustarCampos = () => {
     const tipo = getVal('tipoMovimiento');
-    const vis = { 'ENTRADA': ['none', 'block'], 'SALIDA': ['block', 'none'], 'TRANSFERENCIA': ['block', 'block'] };
+    const vis = { 
+        'ENTRADA': ['none', 'block'], 
+        'SALIDA': ['block', 'none'], 
+        'TRANSFERENCIA': ['block', 'block'] 
+    };
     const [o, d] = vis[tipo] || ['block', 'block'];
     const rO = getEl('rowBodegaOrigen'), rD = getEl('rowBodegaDestino');
     if (rO) rO.style.display = o;
@@ -101,41 +136,84 @@ const construirDTO = () => {
     let orig = Number(getVal('bodegaOrigenId')) || null;
     let dest = Number(getVal('bodegaDestinoId')) || null;
 
-    if (tipo === 'ENTRADA') { orig = null; if (!dest) return alert("Selecciona bodega destino"), null; }
-    else if (tipo === 'SALIDA') { dest = null; if (!orig) return alert("Selecciona bodega origen"), null; }
-    else { if (!orig || !dest) return alert("Selecciona ambas bodegas"), null; if (orig === dest) return alert("Bodegas no pueden ser iguales"), null; }
+    if (tipo === 'ENTRADA') { 
+        orig = null; 
+        if (!dest) return alert("Selecciona bodega destino"), null; 
+    } else if (tipo === 'SALIDA') { 
+        dest = null; 
+        if (!orig) return alert("Selecciona bodega origen"), null; 
+    } else { 
+        if (!orig || !dest) return alert("Selecciona ambas bodegas"), null; 
+        if (orig === dest) return alert("Bodegas no pueden ser iguales"), null; 
+    }
 
-    if (!state.usuarioId) return alert("Usuario no determinado"), null;
+    if (!state.usuarioId) {
+        alert("No se pudo identificar el usuario. Por favor, inicia sesión nuevamente.");
+        return null;
+    }
 
-    return { tipoMovimiento: tipo, usuarioId: state.usuarioId, bodegaOrigenId: orig, bodegaDestinoId: dest, detalles: dets };
+    console.log("DTO construido con usuarioId:", state.usuarioId);
+
+    return { 
+        tipoMovimiento: tipo, 
+        usuarioId: state.usuarioId, 
+        bodegaOrigenId: orig, 
+        bodegaDestinoId: dest, 
+        detalles: dets 
+    };
 };
 
 // ============= CREAR =============
 const submitCrear = async () => {
     const dto = construirDTO();
     if (!dto) return;
+    
     const btn = getEl('btnSubmitCrear');
     const txt = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Creando...';
+    
     try {
-        const data = await fetchJSON(`${API_URL}/crear`, { method: "POST", body: JSON.stringify(dto) });
-        if (data) { alert(`Movimiento creado (ID: ${data.id || "s/n"})`); cerrarModal(); cargarMovimientos(); }
-    } catch (e) { alert(`Error: ${e.message}`); }
-    finally { btn.disabled = false; btn.textContent = txt; }
+        console.log("Enviando movimiento:", JSON.stringify(dto, null, 2));
+        
+        const data = await fetchJSON(`${API_URL}/crear`, { 
+            method: "POST", 
+            body: JSON.stringify(dto) 
+        });
+        
+        if (data) { 
+            alert(`Movimiento creado exitosamente (ID: ${data.id || "s/n"})`); 
+            cerrarModal(); 
+            await cargarMovimientos(); 
+        }
+    } catch (e) { 
+        console.error("Error al crear movimiento:", e);
+        alert(`Error al crear movimiento: ${e.message}`); 
+    } finally { 
+        btn.disabled = false; 
+        btn.textContent = txt; 
+    }
 };
 
 // ============= MODAL =============
 const abrirModal = () => {
     poblarSelects();
     const dr = getEl('detallesRows');
-    if (dr) { dr.innerHTML = ''; agregarFila(); }
+    if (dr) { 
+        dr.innerHTML = ''; 
+        agregarFila(); 
+    }
     const ts = getEl('tipoMovimiento');
     if (ts) ts.value = 'ENTRADA';
     ajustarCampos();
     getEl('modalCrearMovimiento').style.display = 'flex';
 };
-const cerrarModal = () => getEl('modalCrearMovimiento').style.display = 'none';
+
+const cerrarModal = () => {
+    getEl('modalCrearMovimiento').style.display = 'none';
+    const dr = getEl('detallesRows');
+    if (dr) dr.innerHTML = '';
+};
 
 // ============= RENDERIZAR =============
 const crearFilaMov = m => `<tr>
@@ -152,14 +230,23 @@ const crearFilaMov = m => `<tr>
 const renderMovimientos = (lista = state.movimientos) => {
     const tbody = document.querySelector("#cuerpoTablaMovimientos");
     if (!tbody) return;
-    tbody.innerHTML = lista.length ? lista.map(crearFilaMov).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#718096">No hay movimientos</td></tr>';
+    tbody.innerHTML = lista.length 
+        ? lista.map(crearFilaMov).join('') 
+        : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#718096">No hay movimientos</td></tr>';
 };
 
 const cargarMovimientos = async () => {
     try {
         const data = await fetchJSON(`${API_URL}/listar`);
-        if (data) { state.movimientos = data; renderMovimientos(); }
-    } catch { document.querySelector("#cuerpoTablaMovimientos").innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#e53e3e">Error al cargar</td></tr>'; }
+        if (data) { 
+            state.movimientos = data; 
+            renderMovimientos(); 
+        }
+    } catch (error) { 
+        console.error("Error al cargar movimientos:", error);
+        document.querySelector("#cuerpoTablaMovimientos").innerHTML = 
+            '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#e53e3e">Error al cargar movimientos</td></tr>'; 
+    }
 };
 
 // ============= FILTRAR =============
@@ -169,16 +256,47 @@ const filtrarRango = () => {
     const fIni = new Date(ini), fFin = new Date(fin);
     fFin.setHours(23, 59, 59);
     if (fIni > fFin) return alert("Fecha inicial no puede ser mayor");
-    renderMovimientos(state.movimientos.filter(m => { const f = new Date(m.fecha); return f >= fIni && f <= fFin; }));
+    renderMovimientos(state.movimientos.filter(m => { 
+        const f = new Date(m.fecha); 
+        return f >= fIni && f <= fFin; 
+    }));
 };
 
 // ============= INIT =============
 document.addEventListener("DOMContentLoaded", async () => {
+    console.log("Iniciando aplicación de movimientos...");
+    
+    // Primero obtener información del usuario
+    const usuario = await fetchUsuarioInfo();
+    if (!usuario) {
+        console.error("No se pudo autenticar el usuario");
+        return;
+    }
+    
+    // Luego cargar el resto de datos
     await cargarDatos();
-    state.usuarioId = await fetchUsuarioId();
-    cargarMovimientos();
+    await cargarMovimientos();
 
-    const evs = { btnCrearMovimiento: abrirModal, btnCancelarCrear: cerrarModal, btnSubmitCrear: submitCrear, btnAgregarDetalle: agregarFila, tipoMovimiento: ajustarCampos, btnFiltrar: filtrarRango };
-    Object.entries(evs).forEach(([id, fn]) => getEl(id)?.addEventListener(id.includes('tipo') ? 'change' : 'click', fn));
-    ['fechaInicio', 'fechaFin'].forEach(id => getEl(id)?.addEventListener('keypress', e => e.key === "Enter" && filtrarRango()));
+    // Configurar eventos
+    const evs = { 
+        btnCrearMovimiento: abrirModal, 
+        btnCancelarCrear: cerrarModal, 
+        btnSubmitCrear: submitCrear, 
+        btnAgregarDetalle: agregarFila, 
+        tipoMovimiento: ajustarCampos, 
+        btnFiltrar: filtrarRango 
+    };
+    
+    Object.entries(evs).forEach(([id, fn]) => {
+        const el = getEl(id);
+        if (el) {
+            el.addEventListener(id.includes('tipo') ? 'change' : 'click', fn);
+        }
+    });
+    
+    ['fechaInicio', 'fechaFin'].forEach(id => 
+        getEl(id)?.addEventListener('keypress', e => e.key === "Enter" && filtrarRango())
+    );
+    
+    console.log("Aplicación iniciada. Usuario:", state.usuarioNombre);
 });
