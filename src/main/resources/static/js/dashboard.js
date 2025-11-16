@@ -47,6 +47,14 @@ async function cargarInfoUsuario() {
         document.getElementById("username-rol").textContent = capitalizar(usuario.rol);
         document.getElementById("iniciales").textContent = obtenerIniciales(usuario.nombre);
 
+        // Mostrar opción de Usuarios solo para ADMIN
+        if (usuario.rol === "ADMIN") {
+            const navUsuarios = document.getElementById("nav-usuarios");
+            if (navUsuarios) {
+                navUsuarios.style.display = "block";
+            }
+        }
+
         return usuario;
     } catch (error) {
         console.error(error);
