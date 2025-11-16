@@ -28,6 +28,7 @@
                         <input type="date" id="fechaFin" class="inputDate">
                     </div>
                     <button class="boton botonPrimario" id="btnFiltrar">Filtrar</button>
+                    <button class="boton botonSecundario" id="btnCrearMovimiento">Crear movimiento</button>
                 </div>
             </div>
         </div>
@@ -36,7 +37,7 @@
             <div class="encabezadoTabla">
                 <h3 class="tituloTabla">Registro de Actividades</h3>
             </div>
-            
+
             <div class="tablaWrapper">
                 <table class="tablaMovimientos">
                     <thead>
@@ -59,6 +60,44 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div class="modalOverlay" id="modalCrearMovimiento" style="display:none;">
+            <div class="modalContent">
+                <h3>Crear nuevo movimiento</h3>
+
+                <div class="modalBody">
+                    <label>Tipo de movimiento</label>
+                    <select id="tipoMovimiento">
+                        <option value="ENTRADA">ENTRADA</option>
+                        <option value="SALIDA">SALIDA</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+
+                    <div id="rowBodegaOrigen" style="display:none; margin-top:10px;">
+                        <label>Bodega origen</label>
+                        <select id="bodegaOrigenId"></select>
+                    </div>
+
+                    <div id="rowBodegaDestino" style="margin-top:10px;">
+                        <label>Bodega destino</label>
+                        <select id="bodegaDestinoId"></select>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <label>Detalles (productos)</label>
+                        <div id="detallesRows">
+                        </div>
+                        <div style="margin-top:8px;">
+                            <button class="boton" id="btnAgregarDetalle">Agregar producto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modalActions" style="margin-top:14px;">
+                    <button class="boton" id="btnCancelarCrear">Cancelar</button>
+                    <button class="boton botonPrimario" id="btnSubmitCrear">Crear</button>
+                </div>
             </div>
         </div>
     </div>
