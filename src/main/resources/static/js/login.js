@@ -10,7 +10,7 @@ document.getElementById("formLogin").addEventListener("submit", async (e) => {
     }
 
     try {
-        const res = await fetch('/auth/login', {
+        const res = await fetch(window.API_CONFIG.getApiUrl('/auth/login'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: user, password: pass })
@@ -37,13 +37,3 @@ document.getElementById("formLogin").addEventListener("submit", async (e) => {
         alert('Error de red. Intenta más tarde.');
     }
 });
-
-// Helper para hacer fetchs con el token (usar en otras peticiones)
-function authFetch(url, options = {}) {
-    const token = localStorage.getItem('jwt_token');
-    options.headers = options.headers || {};
-    if (token) {
-        options.headers['Authorization'] = 'Bearer ' + token;
-    }
-    return fetch(url, options);
-}

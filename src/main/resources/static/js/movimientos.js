@@ -1,4 +1,3 @@
-const API_URL = 'http://localhost:8080/api/movimientos';
 const state = { 
     movimientos: [], 
     bodegas: [], 
@@ -15,12 +14,14 @@ const getVal = id => getEl(id)?.value || null;
 
 const redirigirLogin = () => {
     localStorage.removeItem("jwt_token");
-    (window.parent && window.parent !== window ? window.parent : window).location.href = "/templates/login.html";
+    (window.parent && window.parent !== window ? window.parent : window).location.href = `${window.API_CONFIG.API_BASE}/templates/login.html`;
 };
 
 const fetchJSON = async (url, options = {}) => {
     try {
-        const res = await fetch(url, { headers: headers(), ...options });
+        // Agregar el contexto base si la URL no es absoluta
+        const fullUrl = url.startsWith('http') ? url : `${window.API_CONFIG.API_BASE}${url}`;
+        const res = await fetch(fullUrl, { headers: headers(), ...options });
         if (res.status === 401 || res.status === 403) {
             alert("Sesión expirada. Por favor inicia sesión nuevamente.");
             redirigirLogin();
@@ -46,7 +47,7 @@ const fetchUsuarioInfo = async () => {
             redirigirLogin();
             return null;
         }
-        const data = await fetchJSON('http://localhost:8080/auth/userinfo');
+        const data = await fetchJSON('/auth/userinfo');
         if (!data) return null;
         if (data.id) {
             state.usuarioId = data.id;
@@ -67,7 +68,7 @@ const cargarProductosBodega = async (bodegaId) => {
         return;
     }
     try {
-        const res = await fetch(`http://localhost:8080/api/inventario/bodega/${bodegaId}`, { headers: headers() });
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/api/inventario/bodega/${bodegaId}`, { headers: headers() });
         
         // Si el endpoint no existe (404) o hay error, mostrar todos los productos
         if (res.status === 404 || !res.ok) {
@@ -107,8 +108,8 @@ const cargarProductosBodega = async (bodegaId) => {
 const cargarDatos = async () => {
     try {
         const [bodegas, productos] = await Promise.all([
-            fetchJSON('http://localhost:8080/api/bodega/listar').catch(() => []),
-            fetchJSON('http://localhost:8080/api/producto/listar').catch(() => [])
+            fetchJSON('/api/bodega/listar').catch(() => []),
+            fetchJSON('/api/producto/listar').catch(() => [])
         ]);
         if (bodegas) state.bodegas = bodegas;
         if (productos) {
@@ -228,7 +229,7 @@ const submitCrear = async () => {
     btn.disabled = true;
     btn.textContent = 'Creando...';
     try {
-        const data = await fetchJSON(`${API_URL}/crear`, { method: "POST", body: JSON.stringify(dto) });
+        const data = await fetchJSON('/api/movimientos/crear', { method: "POST", body: JSON.stringify(dto) });
         if (data) { 
             alert(`Movimiento creado exitosamente (ID: ${data.id || "s/n"})\n\nTipo: ${dto.tipoMovimiento}\nProductos: ${dto.detalles.length}\nEl inventario se ha actualizado correctamente.`); 
             cerrarModal(); 
@@ -285,7 +286,7 @@ const renderMovimientos = (lista = state.movimientos) => {
 
 const cargarMovimientos = async () => {
     try {
-        const data = await fetchJSON(`${API_URL}/listar`);
+        const data = await fetchJSON('/api/movimientos/listar');
         if (data) { state.movimientos = data; renderMovimientos(); }
     } catch (error) { 
         document.querySelector("#cuerpoTablaMovimientos").innerHTML = 

@@ -7,7 +7,7 @@ async function validarToken() {
     }
 
     try {
-        const res = await fetch("http://localhost:8080/auth/validate", {
+        const res = await fetch(window.API_CONFIG.getApiUrl("/auth/validate"), {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + token
@@ -29,7 +29,7 @@ async function cargarInfoUsuario() {
         const token = localStorage.getItem("jwt_token");
         if (!token) throw new Error("No se encontró el token JWT.");
 
-        const response = await fetch(`http://localhost:8080/auth/userinfo`, {
+        const response = await fetch(window.API_CONFIG.getApiUrl("/auth/userinfo"), {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,

@@ -1,5 +1,4 @@
 // ===== CONSTANTES Y CONFIGURACIÓN =====
-const API_BASE_URL = "http://localhost:8080";
 const TOKEN_KEY = "jwt_token";
 
 // ===== INICIALIZACIÓN =====
@@ -45,7 +44,7 @@ async function validarToken() {
     if (!token) return Utils.redirigirLogin();
 
     try {
-        const res = await fetch(`${API_BASE_URL}/auth/validate`, {
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/auth/validate`, {
             headers: Utils.authHeaders()
         });
         if (!res.ok) Utils.redirigirLogin();
@@ -58,7 +57,7 @@ async function obtenerInfoUsuario() {
     if (!Utils.getToken()) return Utils.redirigirLogin();
 
     try {
-        const res = await fetch(`${API_BASE_URL}/auth/userinfo`, {
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/auth/userinfo`, {
             headers: Utils.authHeaders()
         });
 
@@ -102,7 +101,7 @@ async function cargarBodegas() {
     if (!Utils.getToken()) return Utils.redirigirLogin();
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/bodega/dashboard`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/bodega/dashboard`, {
             headers: Utils.authHeaders()
         });
 
@@ -263,7 +262,7 @@ async function cargarEncargadosDisponibles() {
     if (!select) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/bodega/encargados-disponibles`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/bodega/encargados-disponibles`, {
             headers: Utils.authHeaders()
         });
 
@@ -302,7 +301,7 @@ async function guardarBodega(event) {
 
     try {
         const isUpdate = bodegaId && bodegaId !== "";
-        const url = `${API_BASE_URL}/api/bodega/${isUpdate ? `update/${bodegaId}` : 'create'}`;
+        const url = `${window.API_CONFIG.API_BASE}/api/bodega/${isUpdate ? `update/${bodegaId}` : 'create'}`;
         
         const response = await fetch(url, {
             method: isUpdate ? "PUT" : "POST",
@@ -358,7 +357,7 @@ async function abrirModalEditar(id, nombre, ubicacion, capacidad) {
 
 async function cargarEncargadoActual(bodegaId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/bodega/buscar/${bodegaId}`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/bodega/buscar/${bodegaId}`, {
             headers: Utils.authHeaders()
         });
         
@@ -407,7 +406,7 @@ async function eliminarBodega() {
     const nombreBodega = bodegaAEliminar.nombre; // Guardar nombre antes de limpiar
     
     try {
-        const response = await fetch(`${API_BASE_URL}/api/bodega/delete/${bodegaAEliminar.id}`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/bodega/delete/${bodegaAEliminar.id}`, {
             method: "DELETE",
             headers: Utils.authHeaders()
         });

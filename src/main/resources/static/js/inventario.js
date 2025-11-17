@@ -1,5 +1,5 @@
 // ===== CONSTANTES Y CONFIGURACIÓN =====
-const API_BASE_URL = "http://localhost:8080";
+
 const TOKEN_KEY = "jwt_token";
 
 // ===== INICIALIZACIÓN =====
@@ -55,7 +55,7 @@ async function validarToken() {
     if (!token) return Utils.redirigirLogin();
 
     try {
-        const res = await fetch(`${API_BASE_URL}/auth/validate`, {
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/auth/validate`, {
             headers: Utils.authHeaders()
         });
         if (!res.ok) Utils.redirigirLogin();
@@ -68,7 +68,7 @@ async function obtenerInfoUsuario() {
     if (!Utils.getToken()) return Utils.redirigirLogin();
 
     try {
-        const res = await fetch(`${API_BASE_URL}/auth/userinfo`, {
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/auth/userinfo`, {
             headers: Utils.authHeaders()
         });
 
@@ -103,7 +103,7 @@ function actualizarUISegunRol(rol, nombre) {
 // ===== CARGAR DATOS =====
 async function cargarBodegas() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/bodega/listar`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/bodega/listar`, {
             headers: Utils.authHeaders()
         });
 
@@ -128,8 +128,8 @@ async function cargarBodegas() {
 async function cargarInventario(nombreBodega = null) {
     try {
         const url = nombreBodega 
-            ? `${API_BASE_URL}/api/inventario/detalle/bodega/${encodeURIComponent(nombreBodega)}`
-            : `${API_BASE_URL}/api/inventario/detalle`;
+            ? `${window.API_CONFIG.API_BASE}/api/inventario/detalle/bodega/${encodeURIComponent(nombreBodega)}`
+            : `${window.API_CONFIG.API_BASE}/api/inventario/detalle`;
 
         const response = await fetch(url, {
             headers: Utils.authHeaders()
@@ -403,8 +403,8 @@ async function cargarBodegasModalNuevo() {
     try {
         const userRole = Utils.getUserRole();
         const url = userRole === "ADMIN" 
-            ? `${API_BASE_URL}/api/bodega/listar`
-            : `${API_BASE_URL}/api/bodega/dashboard`;
+            ? `${window.API_CONFIG.API_BASE}/api/bodega/listar`
+            : `${window.API_CONFIG.API_BASE}/api/bodega/dashboard`;
 
         const response = await fetch(url, {
             headers: Utils.authHeaders()
@@ -431,7 +431,7 @@ async function cargarBodegasModalNuevo() {
 
 async function cargarCategoriasModalNuevo() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/categoria/listar`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/categoria/listar`, {
             headers: Utils.authHeaders()
         });
 
@@ -477,7 +477,7 @@ async function crearNuevoProducto(event) {
             precio_venta: precioVenta
         };
 
-        const responseProducto = await fetch(`${API_BASE_URL}/api/producto/create`, {
+        const responseProducto = await fetch(`${window.API_CONFIG.API_BASE}/api/producto/create`, {
             method: "POST",
             headers: Utils.authHeaders(),
             body: JSON.stringify(nuevoProducto)
@@ -497,7 +497,7 @@ async function crearNuevoProducto(event) {
             stock
         };
 
-        const responseInventario = await fetch(`${API_BASE_URL}/api/inventario/create`, {
+        const responseInventario = await fetch(`${window.API_CONFIG.API_BASE}/api/inventario/create`, {
             method: "POST",
             headers: Utils.authHeaders(),
             body: JSON.stringify(nuevoInventario)
@@ -595,8 +595,8 @@ async function cargarBodegasModalEditar() {
     try {
         const userRole = Utils.getUserRole();
         const url = userRole === "ADMIN" 
-            ? `${API_BASE_URL}/api/bodega/listar`
-            : `${API_BASE_URL}/api/bodega/dashboard`;
+            ? `${window.API_CONFIG.API_BASE}/api/bodega/listar`
+            : `${window.API_CONFIG.API_BASE}/api/bodega/dashboard`;
 
         const response = await fetch(url, {
             headers: Utils.authHeaders()
@@ -623,7 +623,7 @@ async function cargarBodegasModalEditar() {
 
 async function cargarCategoriasModalEditar() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/categoria/listar`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/categoria/listar`, {
             headers: Utils.authHeaders()
         });
 
@@ -671,7 +671,7 @@ async function actualizarInventario(event) {
             precio_venta: precioVenta
         };
 
-        const responseProducto = await fetch(`${API_BASE_URL}/api/producto/update/${productoId}`, {
+        const responseProducto = await fetch(`${window.API_CONFIG.API_BASE}/api/producto/update/${productoId}`, {
             method: "PUT",
             headers: Utils.authHeaders(),
             body: JSON.stringify(productoActualizado)
@@ -689,7 +689,7 @@ async function actualizarInventario(event) {
             stock
         };
 
-        const responseInventario = await fetch(`${API_BASE_URL}/api/inventario/update/${inventarioId}`, {
+        const responseInventario = await fetch(`${window.API_CONFIG.API_BASE}/api/inventario/update/${inventarioId}`, {
             method: "PUT",
             headers: Utils.authHeaders(),
             body: JSON.stringify(inventarioActualizado)
@@ -763,7 +763,7 @@ async function eliminarInventario() {
     try {
         console.log("Eliminando inventario ID:", inventarioIdEliminar);
 
-        const response = await fetch(`${API_BASE_URL}/api/inventario/delete/${inventarioIdEliminar}`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/inventario/delete/${inventarioIdEliminar}`, {
             method: "DELETE",
             headers: Utils.authHeaders()
         });

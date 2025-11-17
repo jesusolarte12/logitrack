@@ -1,5 +1,5 @@
 // ===== CONSTANTES Y CONFIGURACIÓN =====
-const API_BASE_URL = "http://localhost:8080";
+
 const TOKEN_KEY = "jwt_token";
 
 // ===== VARIABLES GLOBALES =====
@@ -40,7 +40,7 @@ async function validarToken() {
     if (!token) return Utils.redirigirLogin();
 
     try {
-        const res = await fetch(`${API_BASE_URL}/auth/validate`, {
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/auth/validate`, {
             headers: Utils.authHeaders()
         });
         if (!res.ok) Utils.redirigirLogin();
@@ -85,7 +85,7 @@ function inicializarEventos() {
 // ===== API - LISTAR USUARIOS =====
 async function cargarUsuarios() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/usuario/listar`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/usuario/listar`, {
             headers: Utils.authHeaders()
         });
 
@@ -162,7 +162,7 @@ async function buscarPorDocumento() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/usuario/buscar/${documento}`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/usuario/buscar/${documento}`, {
             headers: Utils.authHeaders()
         });
 
@@ -201,7 +201,7 @@ function abrirModalNuevo() {
 // ===== MODAL - EDITAR USUARIO =====
 async function editarUsuario(documento) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/usuario/buscar/${documento}`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/usuario/buscar/${documento}`, {
             headers: Utils.authHeaders()
         });
 
@@ -255,14 +255,14 @@ async function guardarUsuario(e) {
         if (usuarioEnEdicion) {
             // Actualizar usuario existente
             const documentoOriginal = document.getElementById("documentoOriginal").value;
-            response = await fetch(`${API_BASE_URL}/api/usuario/actualizar/${documentoOriginal}`, {
+            response = await fetch(`${window.API_CONFIG.API_BASE}/api/usuario/actualizar/${documentoOriginal}`, {
                 method: "PATCH",
                 headers: Utils.authHeaders(),
                 body: JSON.stringify(formData)
             });
         } else {
             // Crear nuevo usuario
-            response = await fetch(`${API_BASE_URL}/api/usuario/crear`, {
+            response = await fetch(`${window.API_CONFIG.API_BASE}/api/usuario/crear`, {
                 method: "POST",
                 headers: Utils.authHeaders(),
                 body: JSON.stringify(formData)
@@ -297,7 +297,7 @@ async function confirmarEliminar() {
     if (!documentoAEliminar) return;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/api/usuario/eliminar/${documentoAEliminar}`, {
+        const response = await fetch(`${window.API_CONFIG.API_BASE}/api/usuario/eliminar/${documentoAEliminar}`, {
             method: "DELETE",
             headers: Utils.authHeaders()
         });

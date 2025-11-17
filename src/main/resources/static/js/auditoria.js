@@ -113,7 +113,7 @@ async function loadAuditorias() {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = 'Bearer ' + token;
 
-        const res = await fetch('/api/auditoria/listar', { headers });
+        const res = await fetch(`${window.API_CONFIG.API_BASE}/api/auditoria/listar`, { headers });
 
         if (!res.ok) {
             tabla.innerHTML = `<tr><td colspan="6">Error cargando auditorías (status ${res.status})</td></tr>`;
