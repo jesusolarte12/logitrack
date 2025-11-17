@@ -55,9 +55,9 @@ mvn spring-boot:run
 
 ---
 
-## 🚀 Despliegue en Tomcat (Servidor de Producción)
+## Despliegue en Tomcat (Servidor de Producción)
 
-### 📋 Requisitos del Servidor
+### Requisitos del Servidor
 
 La máquina destino debe tener instalado:
 - **Java JDK 17** o superior
@@ -67,7 +67,7 @@ La máquina destino debe tener instalado:
 
 ---
 
-### 📦 Despliegue de la Aplicación
+### Despliegue de la Aplicación
 
 #### Paso 1: Configurar la Base de Datos en el Servidor
 
@@ -78,34 +78,6 @@ mysql -u root -p
 # Ejecutar scripts de base de datos
 mysql -u root -p < /ruta/a/schema.sql
 mysql -u root -p < /ruta/a/data.sql
-```
-
-#### Paso 2: Configurar application.properties
-
-**ANTES de compilar**, edita `src/main/resources/application.properties`:
-
-```properties
-spring.application.name=bodegaslogitrack
-
-# Configuración de MySQL del servidor
-spring.datasource.url=jdbc:mysql://localhost:3306/LogiTrack
-spring.datasource.username=Tusuario
-spring.datasource.password=tucontraseña
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
-
-# Producción: Deshabilitar SQL en consola
-spring.jpa.show-sql=false
-
-# Documentación Swagger
-springdoc.api-docs.enabled=true
-springdoc.swagger-ui.enabled=true
-springdoc.swagger-ui.path=/docs
-springdoc.packages-to-scan=com.proyecto.logitrack.controller
-
-# JWT Configuración (CAMBIAR en producción)
-jwt.secret=TuClaveSecretaMuySeguraParaProduccionDe64CaracteresOMas!!
-jwt.expiration-ms=86400000
 ```
 
 #### Paso 3: Compilar el Proyecto
