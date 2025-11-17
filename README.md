@@ -55,32 +55,170 @@ mvn spring-boot:run
 
 ---
 
-## 🚀 Despliegue en Tomcat Externo
+## 🚀 Despliegue en Tomcat (Servidor de Producción)
 
-### 1. Generar WAR
+### 📋 Requisitos del Servidor
+
+La máquina destino debe tener instalado:
+- **Java JDK 17** o superior
+- **Apache Tomcat 10** o superior
+- **MySQL 8.0** o superior
+- Acceso con permisos de administrador/sudo
+
+---
+
+### 📦 Despliegue de la Aplicación
+
+#### Paso 1: Configurar la Base de Datos en el Servidor
+
 ```bash
-mvn clean package
+# Conectar a MySQL
+mysql -u root -p
+
+# Ejecutar scripts de base de datos
+mysql -u root -p < /ruta/a/schema.sql
+mysql -u root -p < /ruta/a/data.sql
 ```
 
-### 2. Copiar WAR a Tomcat
+#### Paso 2: Configurar application.properties
+
+**ANTES de compilar**, edita `src/main/resources/application.properties`:
+
+```properties
+spring.application.name=bodegaslogitrack
+
+# Configuración de MySQL del servidor
+spring.datasource.url=jdbc:mysql://localhost:3306/LogiTrack
+spring.datasource.username=Tusuario
+spring.datasource.password=tucontraseña
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+
+# Producción: Deshabilitar SQL en consola
+spring.jpa.show-sql=false
+
+# Documentación Swagger
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.path=/docs
+springdoc.packages-to-scan=com.proyecto.logitrack.controller
+
+# JWT Configuración (CAMBIAR en producción)
+jwt.secret=TuClaveSecretaMuySeguraParaProduccionDe64CaracteresOMas!!
+jwt.expiration-ms=86400000
+```
+
+#### Paso 3: Compilar el Proyecto
+
 ```bash
-cp target/logitrack-0.0.1-SNAPSHOT.war /ruta/tomcat/webapps/logitrack.war
+# En tu máquina de desarrollo
+cd /ruta/logitrack
+mvn clean package -DskipTests
+
+# El WAR se genera en: target/logitrack-0.0.1-SNAPSHOT.war
 ```
 
-### 3. Iniciar Tomcat
+#### Paso 4: Transferir el WAR al Servidor
+
+**Con SCP (SSH)**
 ```bash
-cd /ruta/tomcat/bin
-./startup.sh  # Linux/Mac
-startup.bat   # Windows
+scp target/logitrack-0.0.1-SNAPSHOT.war usuario@servidor:/tmp/logitrack.war
 ```
 
-### 4. Acceder a la aplicación
-```
-http://localhost:8080/logitrack/
-http://localhost:8080/logitrack/docs
+#### Paso 5: Desplegar en Tomcat
+
+**Si Tomcat está instalado con gestor de paquetes:**
+```bash
+# Ubuntu/Debian/Arch
+sudo cp /tmp/logitrack.war /var/lib/tomcat10/webapps/logitrack.war
+
+# Reiniciar Tomcat
+sudo systemctl restart tomcat10
+
+# Verificar estado
+sudo systemctl status tomcat10
+
 ```
 
-> **Nota:** Asegúrate de que el `application.properties` tenga las credenciales correctas de MySQL antes de generar el WAR.
+**Si Tomcat está en /opt/tomcat10:**
+```bash
+sudo cp /tmp/logitrack.war /opt/tomcat10/webapps/logitrack.war
+
+# Reiniciar Tomcat
+sudo /opt/tomcat10/bin/shutdown.sh
+sudo /opt/tomcat10/bin/startup.sh
+
+```
+
+#### Paso 6: Verificar el Despliegue
+
+```bash
+# Esperar 15-30 segundos para que despliegue
+
+# Verificar que la carpeta se desempaquetó
+ls -la /var/lib/tomcat10/webapps/ | grep logitrack
+# Deberías ver: logitrack/ y logitrack.war
+
+# Probar endpoint
+curl http://localhost:8080/logitrack/auth/login
+# Debería responder (aunque sea error sin credenciales)
+```
+
+---
+
+### 🌐 Acceso a la Aplicación
+
+Una vez desplegado, accede desde cualquier navegador:
+
+**En el servidor local:**
+```
+http://localhost:8080/logitrack/templates/login.html
+http://localhost:8080/logitrack/docs 
+```
+
+---
+
+### 🔄 Actualizar la Aplicación
+
+Para desplegar una nueva versión:
+
+```bash
+# 1. Detener Tomcat
+sudo systemctl stop tomcat10
+
+# 2. Eliminar versión anterior
+sudo rm -rf /var/lib/tomcat10/webapps/logitrack*
+
+# 3. Copiar nuevo WAR
+sudo cp /ruta/nuevo/logitrack-0.0.1-SNAPSHOT.war /var/lib/tomcat10/webapps/logitrack.war
+
+# 4. Iniciar Tomcat
+sudo systemctl start tomcat10
+
+# 5. Verificar logs
+sudo tail -f /var/log/tomcat10/catalina.out
+```
+
+---
+
+**Problema: Error de conexión a MySQL**
+```bash
+# Verificar que MySQL esté corriendo
+sudo systemctl status mysql
+
+# Probar conexión
+mysql -u logitrack_user -p -h localhost LogiTrack
+```
+
+**Problema: 404 Not Found**
+```bash
+# Verificar que la app se desempaquetó
+ls -la /var/lib/tomcat10/webapps/logitrack/
+
+# Verificar URL correcta
+# Debe ser: http://IP:8080/logitrack/templates/login.html
+# NO: http://IP:8080/templates/login.html
+```
 
 ---
 
