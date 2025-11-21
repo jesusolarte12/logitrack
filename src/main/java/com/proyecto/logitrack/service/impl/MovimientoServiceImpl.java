@@ -175,6 +175,12 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+
+public List<MovimientoDTO> listarRecientes() {
+        return repo.findTop10ByOrderByFechaDesc()
+                   .stream()
+                   .map(mapper::toDTO)
+                   .toList();
     
     @Override
     @Transactional(readOnly = true)
