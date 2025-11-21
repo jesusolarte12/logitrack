@@ -27,9 +27,8 @@ public class MovimientoControllerTest {
     }
 
     // Crear Endpoint reportes
-    @GetMapping("/reportes")
-    public ResponseEntity<List<MovimientoDTO>> verReportes(){ 
-        List<MovimientoDTO> movimientos = movService.listarMovimientos();
-        return ResponseEntity.ok(movimientos);
+    @GetMapping("/reportes/movimientos")
+    public ResponseEntity<Map<String, Object>> reporteMovimientos() {
+        return ResponseEntity.ok(movService.obtenerReporteMovimientos());
     }
 }
