@@ -68,12 +68,28 @@ VALUES ('ENTRADA', 2, 1); -- ID: 1
 INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
 (1, 1, 300),
 (1, 2, 200),
+(1, 4, 50),
+(1, 1, 300),
+(1, 2, 200),
+(1, 4, 50),
+(1, 1, 300),
+(1, 2, 200),
 (1, 4, 50);
 
 
 -- 2) SALIDA desde Bodega Central por LUIS
 INSERT INTO movimiento (tipo_movimiento, usuario_id, bodega_origen_id)
-VALUES ('SALIDA', 3, 1); -- ID: 2
+VALUES ('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1),
+('SALIDA', 3, 1); -- ID: 2
 
 INSERT INTO movimiento_detalle (movimiento_id, producto_id, cantidad) VALUES
 (2, 1, 50),

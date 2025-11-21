@@ -53,8 +53,8 @@ public class SecurityConfig {
         .requestMatchers("/v3/api-docs/**").permitAll()
         .requestMatchers("/swagger-ui/**").permitAll()
         
-        // API protegida
-        .requestMatchers("/api/**").authenticated()
+        // API's Examen publicas
+        .requestMatchers("/api/**").permitAll()
 
         // Todo lo demás, también protegido
         .anyRequest().authenticated()
