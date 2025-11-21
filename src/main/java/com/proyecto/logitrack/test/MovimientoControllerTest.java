@@ -21,10 +21,9 @@ public class MovimientoControllerTest {
     private final MovimientoService movService;
 
     // Crear Endpoint recientes
-    @GetMapping("/recientes")
+    @GetMapping("/movimientos/recientes")
     public ResponseEntity<List<MovimientoDTO>> listarRecientes(){ 
-        List<MovimientoDTO> movimientos = movService.listarMovimientos();
-        return ResponseEntity.ok(movimientos);
+        return ResponseEntity.ok(movService.listarRecientes());
     }
 
     // Crear Endpoint reportes
