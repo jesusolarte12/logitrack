@@ -13,7 +13,9 @@ public interface MovimientoService {
     List<MovimientoDTO> listarMovimientos();
 
     List<MovimientoDTO> listarRecientes();
-    
+
+    @Query("SELECT m.tipoMovimiento, COUNT(m) FROM Movimiento m GROUP BY m.tipoMovimiento")
+    List<Object[]> contarMovimientosPorTipo();
     List<MovimientoDTO> listarMovimientosPorUsuario(String username);
 
     void eliminarMovimiento(Integer id);
