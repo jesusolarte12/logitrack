@@ -181,6 +181,27 @@ public List<MovimientoDTO> listarRecientes() {
                    .stream()
                    .map(mapper::toDTO)
                    .toList();
+
+@Override
+@Transactional(readOnly = true)
+public Map<String, Object> obtenerReporteMovimientos() {
+
+    long total = movimientoRepository.count();
+
+    Map<String, Long> porTipo = new HashMap<>();
+
+    List<Object[]> resultados = movimientoRepository.contarMovimientosPorTipo();
+
+    for (Object[] fila : resultados) {
+        porTipo.put(fila[0].toString(), (Long) fila[1]);
+    }
+
+    Map<String, Object> reporte = new HashMap<>();
+    reporte.put("totalMovimientos", total);
+    reporte.put("porTipo", porTipo);
+
+    return reporte;
+}
     
     @Override
     @Transactional(readOnly = true)
