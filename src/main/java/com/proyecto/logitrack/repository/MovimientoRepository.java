@@ -14,9 +14,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
     // Buscar por tipo de movimiento
     List<Movimiento> findByTipoMovimiento(TipoMovimiento tipoMovimiento);
 
-
-@Query("SELECT m FROM Movimiento m ORDER BY m.fecha DESC")
-List<Movimiento> findTop10ByOrderByFechaDesc(Pageable pageable);
+List<Movimiento> findTop10ByOrderByFechaDesc();
 
     //Buscar por rango de fecha
     List<Movimiento> findByFechaBetween(LocalDateTime desde, LocalDateTime hasta);
