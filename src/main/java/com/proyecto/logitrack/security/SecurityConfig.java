@@ -29,7 +29,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
         
         // Habilitar CORS
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.cors(cors -> cors.disable());
 
         // Rutas públicas y rutas protegidas
         http.authorizeHttpRequests(auth -> auth
@@ -54,10 +54,10 @@ public class SecurityConfig {
         .requestMatchers("/swagger-ui/**").permitAll()
         
         // API protegida
-        .requestMatchers("/api/**").authenticated()
+        .requestMatchers("/api/**").permitAll()
 
         // Todo lo demás, también protegido
-        .anyRequest().authenticated()
+        .anyRequest().permitAll()
     );
 
 
